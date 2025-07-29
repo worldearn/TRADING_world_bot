@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RADING_world_bot</title>
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1,h2,h3,p,label {
+    margin: 0 0 10px 0;
+  }
+  button {
+    cursor: pointer;
+  }
+  /* Container */
+  #container {
+    width: 100%;
+    max-width: 700px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 20px 30px;
+    margin: 20px;
+  }
+  /* Login/signup */
+  #login-section, #signup-section {
+    max-width: 400px;
+    margin: auto;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+  }
+  button {
+    background: #4caf50;
+    border: none;
+    padding: 12px;
+    color: white;
+    font-weight: 700;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #3a8d38;
+  }
+  .link {
+    color: #99caff;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
+    user-select: none;
+  }
+  .error {
+    color: #ff7979;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  /* Dashboards */
+  #user-dashboard, #agent-dashboard {
+    display: none;
+    max-width: 700px;
+    background: rgba(255 255 255 / 0.1);
+    padding: 20px 30px;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+  header.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  header.dashboard-header h2 {
+    margin: 0;
+  }
+  header.dashboard-header button {
+    background: #e74c3c;
+    padding: 8px 15px;
+    font-weight: 700;
+    border-radius: 8px;
+  }
+  header.dashboard-header button:hover {
+    background: #c0392b;
+  }
+
+  /* User Dashboard Tabs */
+  nav.user-nav {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+  }
+  nav.user-nav button {
+    background: #5a8dee;
+    border-radius: 12px;
+    padding: 10px 15px;
+    font-weight: 700;
+    flex: 1;
+    margin: 0 5px;
+    transition: background 0.3s ease;
+  }
+  nav.user-nav button.active, nav.user-nav button:hover {
+    background: #3b6bcc;
+  }
+
+  /* Sections */
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255 255 255 / 0.15);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+  }
+  th {
+    background: #5a8dee;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    nav.user-nav {
+      flex-direction: column;
+    }
+    nav.user-nav button {
+      margin: 5px 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+
+  <!-- LOGIN -->
+  <div id="login-section">
+    <h2>Login</h2>
+    <div id="login-error" class="error"></div>
+    <label for="login-id">ID</label>
+    <input type="text" id="login-id" placeholder="तपाईंको ID राख्नुहोस्" autocomplete="off" />
+    <label for="login-password">Password</label>
+    <input type="password" id="login-password" placeholder="Password राख्नुहोस्" autocomplete="off" />
+    <button id="login-btn">Login</button>
+    <div class="link" id="show-signup">नयाँ प्रयोगकर्ता? Sign Up यहाँ क्लिक गर्नुहोस्</div>
+  </div>
+
+  <!-- SIGNUP -->
+  <div id="signup-section" style="display:none;">
+    <h2>Sign Up (User Only)</h2>
+    <div id="signup-error" class="error"></div>
+    <label for="signup-id">User ID</label>
+    <input type="text" id="signup-id" placeholder="User ID बनाउनुहोस्" autocomplete="off" />
+    <label for="signup-password">Password</label>
+    <input type="password" id="signup-password" placeholder="Password बनाउनुहोस्" autocomplete="off" />
+    <button id="signup-btn">Sign Up</button>
+    <div class="link" id="show-login">Login पृष्ठमा जानुहोस्</div>
+  </div>
+
+  <!-- USER DASHBOARD -->
+  <div id="user-dashboard">
+    <header class="dashboard-header">
+      <h2>User Dashboard</h2>
+      <button id="logout-user">Logout</button>
+    </header>
+
+    <nav class="user-nav">
+      <button class="tab-btn active" data-section="overview">Overview</button>
+      <button class="tab-btn" data-section="vip">VIP Package</button>
+      <button class="tab-btn" data-section="withdraw">Withdrawal Request</button>
+      <button class="tab-btn" data-section="portfolio">Portfolio</button>
+    </nav>
+
+    <section id="overview" class="active">
+      <p><strong>Balance:</strong> <span id="user-balance">0.00</span> USDT</p>
+      <p><strong>Daily Earnings (7% + VIP bonus):</strong> <span id="user-daily-earning">0.00</span> USDT</p>
+      <p><strong>VIP Level:</strong> <span id="user-vip-level">0</span></p>
+      <button id="deposit-btn" style="background:#1abc9c; margin-top:15px;">Deposit Request (Telegram Bot खोल्नुहोस्)</button>
+    </section>
+
+    <section id="vip">
+      <h3>VIP Packages किन्नुहोस्</h3>
+      <select id="vip-package-select">
+        <option value="100">VIP Basic - 100 USDT</option>
+        <option value="500">VIP Silver - 500 USDT</option>
+        <option value="1000">VIP Gold - 1000 USDT</option>
+      </select>
+      <button id="buy-vip-btn">किनुहोस्</button>
+    </section>
+
+    <section id="withdraw">
+      <h3>Withdrawal Request गर्नुहोस्</h3>
+      <label for="withdraw-amount">रकम</label>
+      <input type="number" id="withdraw-amount" min="1" placeholder="रकम प्रविष्ट गर्नुहोस्" />
+      <button id="withdraw-request-btn">Request Withdraw</button>
+      <div id="withdraw-msg" class="error" style="margin-top:10px;"></div>
+    </section>
+
+    <section id="portfolio">
+      <h3>Your Portfolio</h3>
+      <p>VIP Packages Bought: <span id="vip-packages-count">0</span></p>
+      <p>Total Withdraw Requests: <span id="total-withdraw-requests">0</span></p>
+    </section>
+  </div>
+
+  <!-- AGENT DASHBOARD -->
+  <div id="agent-dashboard">
+    <header class="dashboard-header">
+      <h2>Agent Dashboard</h2>
+      <button id="logout-agent">Logout</button>
+    </header>
+
+    <label for="agent-search-id">User ID खोज्नुहोस्</label>
+    <input type="text" id="agent-search-id" placeholder="User ID टाइप गर्नुहोस्" autocomplete="off" />
+    <button id="agent-search-btn">Search</button>
+
+    <div id="agent-user-details" style="margin-top:15px; display:none;">
+      <h3>User Details</h3>
+      <p><strong>ID:</strong> <span id="agent-user-id"></span></p>
+      <p><strong>Balance:</strong> <span id="agent-user-balance"></span> USDT</p>
+      <p><strong>VIP Level:</strong> <span id="agent-user-vip"></span></p>
+      <p><strong>Daily Earnings:</strong> <span id="agent-user-daily"></span> USDT</p>
+
+      <h4>Deposit/Withdraw Actions</h4>
+      <label for="agent-deposit-amount">Deposit Amount</label>
+      <input type="number" id="agent-deposit-amount" min="1" placeholder="Deposit रकम प्रविष्ट गर्नुहोस्" />
+      <button id="agent-deposit-btn">Deposit गर्नुहोस्</button>
+
+      <label for="agent-withdraw-amount">Withdraw Amount</label>
+      <input type="number" id="agent-withdraw-amount" min="1" placeholder="Withdraw रकम प्रविष्ट गर्नुहोस्" />
+      <button id="agent-withdraw-btn">Withdraw Approve गर्नुहोस्</button>
+    </div>
+
+    <div style="margin-top:20px;">
+      <h3>Withdraw Requests</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Approve</th>
+          </tr>
+        </thead>
+        <tbody id="withdraw-requests-tbody">
+          <!-- Withdraw requests listed here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  // Fixed Agents
+  const agents = {
+    'agent001': 'Nabin@1234',
+    'agent002': 'Rolex@4567',
+    'agent003': 'World@7890'
+  };
+
+  const USERS_KEY = 'rwb_users';
+  const WITHDRAW_KEY = 'rwb_withdraw_requests';
+
+  // Elements
+  const loginSection = document.getElementById('login-section');
+  const signupSection = document.getElementById('signup-section');
+  const userDashboard = document.getElementById('user-dashboard');
+  const agentDashboard = document.getElementById('agent-dashboard');
+
+  // Login inputs
+  const loginIdInput = document.getElementById('login-id');
+  const loginPassInput = document.getElementById('login-password');
+  const loginBtn = document.getElementById('login-btn');
+  const loginError = document.getElementById('login-error');
+
+  // Signup inputs
+  const signupIdInput = document.getElementById('signup-id');
+  const signupPassInput = document.getElementById('signup-password');
+  const signupBtn = document.getElementById('signup-btn');
+  const signupError = document.getElementById('signup-error');
+
+  // User dashboard elements
+  const userBalanceEl = document.getElementById('user-balance');
+  const userDailyEarningEl = document.getElementById('user-daily-earning');
+  const userVipLevelEl = document.getElementById('user-vip-level');
+  const depositBtn = document.getElementById('deposit-btn');
+
+  const vipSelect = document.getElementById('vip-package-select');
+  const buyVipBtn = document.getElementById('buy-vip-btn');
+
+  const withdrawAmountInput = document.getElementById('withdraw-amount');
+  const withdrawRequestBtn = document.getElementById('withdraw-request-btn');
+  const withdrawMsg = document.getElementById('withdraw-msg');
+
+  const vipPackagesCount = document.getElementById('vip-packages-count');
+  const totalWithdrawRequests = document.getElementById('total-withdraw-requests');
+
+  // User dashboard tabs
+  const tabButtons = document.querySelectorAll('nav.user-nav button.tab-btn');
+  const sections = document.querySelectorAll('section');
+
+  // Agent dashboard elements
+  const agentSearchIdInput = document.getElementById('agent-search-id');
+  const agentSearchBtn = document.getElementById('agent-search-btn');
+  const agentUserDetails = document.getElementById('agent-user-details');
+  const agentUserId = document.getElementById('agent-user-id');
+  const agentUserBalance = document.getElementById('agent-user-balance');
+  const agentUserVip = document.getElementById('agent-user-vip');
+  const agentUserDaily = document.getElementById('agent-user-daily');
+
+  const agentDepositAmount = document.getElementById('agent-deposit-amount');
+  const agentDepositBtn = document.getElementById('agent-deposit-btn');
+
+  const agentWithdrawAmount = document.getElementById('agent-withdraw-amount');
+  const agentWithdrawBtn = document.getElementById('agent-withdraw-btn');
+
+  const withdrawRequestsTbody = document.getElementById('withdraw-requests-tbody');
+
+  // Utility: load/save users
+  function loadUsers() {
+    const users = localStorage.getItem(USERS_KEY);
+    return users ? JSON.parse(users) : {};
+  }
+  function saveUsers(users) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+
+  // Utility: load/save withdraw requests
+  function loadWithdrawRequests() {
+    const reqs = localStorage.getItem(WITHDRAW_KEY);
+    return reqs ? JSON.parse(reqs) : [];
+  }
+  function saveWithdrawRequests(reqs) {
+    localStorage.setItem(WITHDRAW_KEY, JSON.stringify(reqs));
+  }
+
+  // Clear errors
+  function clearLoginError() { loginError.textContent = ''; }
+  function clearSignupError() { signupError.textContent = ''; }
+  function clearWithdrawMsg() { withdrawMsg.textContent = ''; }
+
+  // Show/Hide login/signup/dashboard
+  function showLogin() {
+    loginSection.style.display = 'block';
+    signupSection.style.display = 'none';
+    userDashboard.style.display = 'none';
+    agentDashboard.style.display = 'none';
+    clearLoginError();
+    clearSignupError();
+    clearWithdrawMsg();
+    clearLoginFields();
+  }
+  function showSignup() {
+    loginSection.style.display = 'none';
+    signupSection.style.display = 'block';
+    userDashboard.style.display = 'none';
+    agentDashboard.style.display = 'none';
+    clearLoginError();
+    clearSignupError();
+    clearWithdrawMsg();
+    clearSignupFields();
+  }
+  function showUserDashboard() {
+    loginSection.style.display = 'none';
+    signupSection.style.display = 'none';
+    userDashboard.style.display = 'block';
+    agentDashboard.style.display = 'none';
+  }
+  function showAgentDashboard() {
+    loginSection.style.display = 'none';
+    signupSection.style.display = 'none';
+    userDashboard.style.display = 'none';
+    agentDashboard.style.display = 'block';
+  }
+
+  // Clear input fields
+  function clearLoginFields() {
+    loginIdInput.value = '';
+    loginPassInput.value = '';
+  }
+  function clearSignupFields() {
+    signupIdInput.value = '';
+    signupPassInput.value = '';
+  }
+
+  // Login handler
+  loginBtn.onclick = () => {
+    clearLoginError();
+    const id = loginIdInput.value.trim();
+    const password = loginPassInput.value;
+
+    if (!id || !password) {
+      loginError.textContent = 'ID र Password दुवै प्रविष्ट गर्नुहोस्।';
+      return;
+    }
+
+    if (agents[id] && agents[id] === password) {
+      currentAgent = id;
+      showAgentDashboard();
+      renderAgentWithdrawRequests();
+      resetAgentUserDetails();
+      return;
+    }
+
+    let users = loadUsers();
+    if (users[id] && users[id].password === password) {
+      currentUser = id;
+      showUserDashboard();
+      renderUserDashboard();
+      return;
+    }
+
+    loginError.textContent = 'ID वा Password गलत छ।';
+  };
+
+  // Signup handler
+  signupBtn.onclick = () => {
+    clearSignupError();
+    const id = signupIdInput.value.trim();
+    const password = signupPassInput.value;
+
+    if (!id || !password) {
+      signupError.textContent = 'User ID र Password दुवै प्रविष्ट गर्नुहोस्।';
+      return;
+    }
+    if (agents[id]) {
+      signupError.textContent = 'यो ID प्रयोग गर्न सकिँदैन।';
+      return;
+    }
+    let users = loadUsers();
+    if (users[id]) {
+      signupError.textContent = 'यो ID पहिले नै छ।';
+      return;
+    }
+
+    users[id] = {
+      password: password,
+      balance: 0,
+      vipLevel: 0,
+      packagesBought: 0,
+      withdrawRequests: []
+    };
+
+    saveUsers(users);
+    alert('Signup सफल भयो। अब Login गर्नुहोस्।');
+    clearSignupFields();
+    showLogin();
+  };
+
+  // Toggle login/signup views
+  document.getElementById('show-signup').onclick = () => showSignup();
+  document.getElementById('show-login').onclick = () => showLogin();
+
+  // User dashboard variables
+  let currentUser = null;
+  let currentAgent = null;
+
+  // Update user dashboard
+  function renderUserDashboard() {
+    let users = loadUsers();
+    let u = users[currentUser];
+    if (!u) {
+      alert('User data भेटिएन।');
+      logout();
+      return;
+    }
+    userBalanceEl.textContent = u.balance.toFixed(2);
+    userVipLevelEl.textContent = u.vipLevel;
+    vipPackagesCount.textContent = u.packagesBought;
+    // daily earnings = balance * 7% + vipLevel bonus 0.5% per level
+    const dailyPercent = 7 + (u.vipLevel * 0.5);
+    const dailyEarning = u.balance * (dailyPercent / 100);
+    userDailyEarningEl.textContent = dailyEarning.toFixed(2);
+
+    // total withdraw requests count
+    let withdrawReqs = loadWithdrawRequests();
+    let userReqs = withdrawReqs.filter(r => r.userId === currentUser);
+    totalWithdrawRequests.textContent = userReqs.length;
+  }
+
+  // Deposit button opens telegram bot link
+  depositBtn.onclick = () => {
+    window.open('https://t.me/CostumereCare_Bot', '_blank');
+  };
+
+  // Buy VIP Package
+  buyVipBtn.onclick = () => {
+    let selected = vipSelect.value;
+    let amount = parseFloat(selected);
+    if (isNaN(amount) || amount <= 0) return;
+
+    let users = loadUsers();
+    let u = users[currentUser];
+    if (u.balance < amount) {
+      alert('तपाईंको balance मा यो रकम छैन।');
+      return;
+    }
+    u.balance -= amount;
+    u.vipLevel += 1;
+    u.packagesBought += 1;
+    saveUsers(users);
+    alert(`VIP package किन्न सफल भयो! तपाईंको VIP level अब ${u.vipLevel} भयो।`);
+    renderUserDashboard();
+  };
+
+  // Withdraw request
+  withdrawRequestBtn.onclick = () => {
+    clearWithdrawMsg();
+    let amt = parseFloat(withdrawAmountInput.value);
+    if (isNaN(amt) || amt <= 0) {
+      withdrawMsg.textContent = 'कृपया मान्य रकम प्रविष्ट गर्नुहोस्।';
+      return;
+    }
+    let users = loadUsers();
+    let u = users[currentUser];
+    if (amt > u.balance) {
+      withdrawMsg.textContent = 'तपाईंको balance भन्दा बढी रकम माग्न सकिँदैन।';
+      return;
+    }
+
+    // Add withdraw request to global withdraw requests
+    let withdrawRequests = loadWithdrawRequests();
+    withdrawRequests.push({
+      id: Date.now(),
+      userId: currentUser,
+      amount: amt,
+      status: 'Pending'
+    });
+    saveWithdrawRequests(withdrawRequests);
+
+    alert('Withdrawal request पठाइयो। Agent ले approve गरेपछि मात्र रकम कटौती हुनेछ।');
+    withdrawAmountInput.value = '';
+    renderUserDashboard();
+    renderAgentWithdrawRequests();
+  };
+
+  // User dashboard tabs
+  tabButtons.forEach(btn => {
+    btn.onclick = () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      sections.forEach(sec => sec.classList.remove('active'));
+      document.getElementById(btn.dataset.section).classList.add('active');
+    };
+  });
+
+  // Agent dashboard variables
+  let searchedUserId = null;
+
+  // Search user by agent
+  agentSearchBtn.onclick = () => {
+    let uid = agentSearchIdInput.value.trim();
+    if (!uid) {
+      alert('User ID प्रविष्ट गर्नुहोस्');
+      return;
+    }
+    let users = loadUsers();
+    if (!users[uid]) {
+      alert('User भेटिएन।');
+      agentUserDetails.style.display = 'none';
+      searchedUserId = null;
+      return;
+    }
+    searchedUserId = uid;
+    agentUserDetails.style.display = 'block';
+
+    let u = users[uid];
+    agentUserId.textContent = uid;
+    agentUserBalance.textContent = u.balance.toFixed(2);
+    agentUserVip.textContent = u.vipLevel;
+    const dailyPercent = 7 + (u.vipLevel * 0.5);
+    agentUserDaily.textContent = (u.balance * (dailyPercent / 100)).toFixed(2);
+
+    agentDepositAmount.value = '';
+    agentWithdrawAmount.value = '';
+  };
+
+  // Agent deposit
+  agentDepositBtn.onclick = () => {
+    if (!searchedUserId) {
+      alert('पहिले User खोज्नुहोस्।');
+      return;
+    }
+    let amt = parseFloat(agentDepositAmount.value);
+    if (isNaN(amt) || amt <= 0) {
+      alert('मान्य रकम प्रविष्ट गर्नुहोस्।');
+      return;
+    }
+    let users = loadUsers();
+    users[searchedUserId].balance += amt;
+    saveUsers(users);
+    alert(`${amt} USDT Deposit सफल भयो।`);
+    agentUserBalance.textContent = users[searchedUserId].balance.toFixed(2);
+    renderUserDashboardIfCurrentUser(searchedUserId);
+    agentDepositAmount.value = '';
+  };
+
+  // Agent withdraw approve
+  agentWithdrawBtn.onclick = () => {
+    if (!searchedUserId) {
+      alert('पहिले User खोज्नुहोस्।');
+      return;
+    }
+    let amt = parseFloat(agentWithdrawAmount.value);
+    if (isNaN(amt) || amt <= 0) {
+      alert('मान्य रकम प्रविष्ट गर्नुहोस्।');
+      return;
+    }
+    let users = loadUsers();
+    if (users[searchedUserId].balance < amt) {
+      alert('User को balance भन्दा बढी रकम निकाल्न सकिँदैन।');
+      return;
+    }
+
+    // Withdraw from balance
+    users[searchedUserId].balance -= amt;
+    saveUsers(users);
+    alert(`${amt} USDT Withdraw approve भयो र काटियो।`);
+    agentUserBalance.textContent = users[searchedUserId].balance.toFixed(2);
+    renderUserDashboardIfCurrentUser(searchedUserId);
+    agentWithdrawAmount.value = '';
+
+    // If user had any pending withdraw requests with same amount, mark as Approved
+    let withdrawRequests = loadWithdrawRequests();
+    for (let req of withdrawRequests) {
+      if (req.userId === searchedUserId && req.amount === amt && req.status === 'Pending') {
+        req.status = 'Approved';
+        break;
+      }
+    }
+    saveWithdrawRequests(withdrawRequests);
+    renderAgentWithdrawRequests();
+  };
+
+  // Render withdraw requests for agent dashboard
+  function renderAgentWithdrawRequests() {
+    let requests = loadWithdrawRequests();
+    if (!requests.length) {
+      withdrawRequestsTbody.innerHTML = `<tr><td colspan="4">Withdrawal request छैन।</td></tr>`;
+      return;
+    }
+    let html = '';
+    for (let req of requests) {
+      html += `
+        <tr>
+          <td>${req.userId}</td>
+          <td>${req.amount.toFixed(2)}</td>
+          <td>${req.status}</td>
+          <td>${req.status === 'Pending' ? `<button data-id="${req.id}" class="approve-btn">Approve</button>` : '-'}</td>
+        </tr>
+      `;
+    }
+    withdrawRequestsTbody.innerHTML = html;
+
+    // Attach approve buttons event
+    document.querySelectorAll('.approve-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        let id = Number(e.target.dataset.id);
+        approveWithdrawRequest(id);
+      };
+    });
+  }
+
+  // Approve withdraw request (agent)
+  function approveWithdrawRequest(id) {
+    let requests = loadWithdrawRequests();
+    let req = requests.find(r => r.id === id);
+    if (!req) return alert('Request फेला परेन।');
+    if (req.status !== 'Pending') return alert('Request पहिले नै approve भइसकेको छ।');
+
+    let users = loadUsers();
+    let u = users[req.userId];
+    if (!u) return alert('User फेला परेन।');
+
+    if (u.balance < req.amount) {
+      alert('User को balance पर्याप्त छैन।');
+      return;
+    }
+
+    u.balance -= req.amount;
+    req.status = 'Approved';
+
+    saveUsers(users);
+    saveWithdrawRequests(requests);
+
+    alert(`Withdrawal request approve भयो। ${req.amount.toFixed(2)} USDT काटियो।`);
+
+    renderAgentWithdrawRequests();
+    if (currentUser === req.userId) renderUserDashboard();
+  }
+
+  // If currentUser matches updated user, refresh dashboard
+  function renderUserDashboardIfCurrentUser(uid) {
+    if (currentUser === uid) renderUserDashboard();
+  }
+
+  // Logout
+  document.getElementById('logout-user').onclick = () => {
+    currentUser = null;
+    showLogin();
+  };
+  document.getElementById('logout-agent').onclick = () => {
+    currentAgent = null;
+    showLogin();
+  };
+
+  // Initialize app by showing login
+  showLogin();
+
+})();
+</script>
+
+</body>
+</html>
