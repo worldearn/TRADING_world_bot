@@ -3,134 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TRADING_world_bot - Version 3.15</title>
+  <title>TRADING_world_bot | Version 3.15</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: white;
+      margin: 0;
+      padding: 0;
+      background: #f0f2f5;
     }
     header {
-      background-color: #141e30;
+      background: #141e30;
+      color: white;
       padding: 1rem;
       text-align: center;
-      font-size: 1.8rem;
-      font-weight: bold;
     }
-    section {
-      padding: 1.5rem;
-    }
-    .card {
-      background-color: rgba(255,255,255,0.1);
-      border-radius: 10px;
+    main {
       padding: 1rem;
-      margin-bottom: 1.5rem;
     }
-    input, button, select {
-      padding: 10px;
-      margin: 0.5rem 0;
-      border-radius: 5px;
-      border: none;
-      width: 100%;
-    }
-    button {
-      background-color: #00c6ff;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .portfolio {
-      background: #1b2838;
+    .section {
+      background: white;
+      margin: 1rem 0;
       padding: 1rem;
       border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .referral {
+      background: #e9f7ef;
+      padding: 1rem;
+      border-left: 5px solid #28a745;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    button {
+      padding: 0.6rem 1.2rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
   <header>
-    TRADING_world_bot - Version 3.15
+    <h1>TRADING_world_bot</h1>
+    <p>Version 3.15 - Referral and Earn System</p>
   </header>
 
-  <section class="card">
-    <h2>Sign Up</h2>
-    <input type="text" placeholder="Your Name" id="signup-name" />
-    <input type="text" placeholder="Referral Code (optional)" id="signup-ref" />
-    <button onclick="signUp()">Sign Up</button>
-  </section>
+  <main>
+    <div class="section">
+      <h2>Referral Code</h2>
+      <p>Your Referral Code:</p>
+      <input type="text" id="myReferral" value="RWX12345" readonly />
+      <button onclick="copyReferral()">Copy Code</button>
+    </div>
 
-  <section class="card">
-    <h2>Deposit</h2>
-    <input type="number" id="deposit-amount" placeholder="Enter deposit amount" />
-    <button onclick="processDeposit()">Deposit</button>
-  </section>
+    <div class="section">
+      <h2>Invite Your Friends</h2>
+      <p>Share your referral code with your friends to earn bonuses when they deposit.</p>
+      <ul>
+        <li>Level 1 Referral: 15%</li>
+        <li>Level 2 Referral: 7%</li>
+        <li>Level 3 Referral: 3%</li>
+      </ul>
+    </div>
 
-  <section class="card portfolio">
-    <h2>My Portfolio</h2>
-    <p><strong>Total Deposited:</strong> $<span id="total-deposit">0</span></p>
-    <p><strong>Total Earned from Referrals:</strong> $<span id="total-ref-earn">0</span></p>
-    <p><strong>Your Referral Code:</strong> <span id="my-ref-code">-</span></p>
-  </section>
+    <div class="section">
+      <h2>Signup</h2>
+      <label>Enter Referral Code (optional):</label>
+      <input type="text" id="refInput" placeholder="Referral Code" />
+      <button onclick="submitSignup()">Submit</button>
+    </div>
+
+    <div class="section">
+      <h2>Your Earnings</h2>
+      <div class="referral">
+        <p>Level 1 Earnings: $<span id="level1">0</span></p>
+        <p>Level 2 Earnings: $<span id="level2">0</span></p>
+        <p>Level 3 Earnings: $<span id="level3">0</span></p>
+        <p><strong>Total Earnings:</strong> $<span id="total">0</span></p>
+      </div>
+    </div>
+  </main>
 
   <script>
-    let users = {};
-    let currentUser = null;
-
-    function generateReferralCode(name) {
-      return name.toLowerCase().replace(/\s/g, '') + Math.floor(Math.random() * 1000);
+    function copyReferral() {
+      const code = document.getElementById("myReferral");
+      code.select();
+      code.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("Referral code copied!");
     }
 
-    function signUp() {
-      const name = document.getElementById('signup-name').value;
-      const ref = document.getElementById('signup-ref').value.trim();
-
-      if (!name) {
-        alert('Enter a valid name.');
-        return;
-      }
-
-      const refCode = generateReferralCode(name);
-      users[refCode] = {
-        name,
-        referrer: ref || null,
-        deposit: 0,
-        referralEarnings: 0,
-        referrals: []
-      };
-      currentUser = refCode;
-      document.getElementById('my-ref-code').innerText = refCode;
-      alert('Signed up successfully! Your referral code is: ' + refCode);
+    function submitSignup() {
+      const ref = document.getElementById("refInput").value;
+      alert("Signup submitted with referral code: " + ref);
     }
 
-    function processDeposit() {
-      const amount = parseFloat(document.getElementById('deposit-amount').value);
-      if (!currentUser || isNaN(amount) || amount <= 0) {
-        alert('Please sign up and enter a valid deposit.');
-        return;
-      }
-
-      users[currentUser].deposit += amount;
-      document.getElementById('total-deposit').innerText = users[currentUser].deposit.toFixed(2);
-
-      const ref1 = users[currentUser].referrer;
-      if (ref1 && users[ref1]) {
-        users[ref1].referralEarnings += amount * 0.15;
-        users[ref1].referrals.push(currentUser);
-
-        const ref2 = users[ref1].referrer;
-        if (ref2 && users[ref2]) {
-          users[ref2].referralEarnings += amount * 0.07;
-
-          const ref3 = users[ref2].referrer;
-          if (ref3 && users[ref3]) {
-            users[ref3].referralEarnings += amount * 0.03;
-          }
-        }
-      }
-
-      document.getElementById('total-ref-earn').innerText = users[currentUser].referralEarnings.toFixed(2);
-      alert('Deposit successful! Referral earnings updated.');
-    }
+    // Dummy earnings data
+    const earnings = {
+      level1: 75,
+      level2: 40,
+      level3: 15
+    };
+    document.getElementById("level1").innerText = earnings.level1;
+    document.getElementById("level2").innerText = earnings.level2;
+    document.getElementById("level3").innerText = earnings.level3;
+    document.getElementById("total").innerText = earnings.level1 + earnings.level2 + earnings.level3;
   </script>
 </body>
 </html>
