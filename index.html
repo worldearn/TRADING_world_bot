@@ -1,811 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TRADING_world_bot</title>
-<style>
-  /* Reset & base */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0; padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  h1,h2,h3,p,label {
-    margin: 0 0 10px 0;
-  }
-  button {
-    cursor: pointer;
-  }
-  /* Container */
-  #container {
-    width: 100%;
-    max-width: 700px;
-    background: rgba(0,0,0,0.3);
-    border-radius: 12px;
-    padding: 20px 30px;
-    margin: 20px;
-  }
-  /* Login/signup */
-  #login-section, #signup-section {
-    max-width: 400px;
-    margin: auto;
-  }
-  input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: none;
-    font-size: 1rem;
-  }
-  button {
-    background: #4caf50;
-    border: none;
-    padding: 12px;
-    color: white;
-    font-weight: 700;
-    border-radius: 10px;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #3a8d38;
-  }
-  .link {
-    color: #99caff;
-    cursor: pointer;
-    text-align: center;
-    margin-top: 10px;
-    user-select: none;
-  }
-  .error {
-    color: #ff7979;
-    margin-bottom: 15px;
-    font-weight: 600;
-  }
-
-  /* Dashboards */
-  #user-dashboard, #agent-dashboard {
-    display: none;
-    max-width: 700px;
-    background: rgba(255 255 255 / 0.1);
-    padding: 20px 30px;
-    border-radius: 12px;
-    margin-top: 20px;
-  }
-  header.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  header.dashboard-header h2 {
-    margin: 0;
-  }
-  header.dashboard-header button {
-    background: #e74c3c;
-    padding: 8px 15px;
-    font-weight: 700;
-    border-radius: 8px;
-  }
-  header.dashboard-header button:hover {
-    background: #c0392b;
-  }
-
-  /* User Dashboard Tabs */
-  nav.user-nav {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 15px;
-  }
-  nav.user-nav button {
-    background: #5a8dee;
-    border-radius: 12px;
-    padding: 10px 15px;
-    font-weight: 700;
-    flex: 1;
-    margin: 0 5px;
-    transition: background 0.3s ease;
-  }
-  nav.user-nav button.active, nav.user-nav button:hover {
-    background: #3b6bcc;
-  }
-
-  /* Sections */
-  section {
-    display: none;
-  }
-  section.active {
-    display: block;
-  }
-
-  /* Tables */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255 255 255 / 0.15);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  th, td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-  }
-  th {
-    background: #5a8dee;
-  }
-  tr:last-child td {
-    border-bottom: none;
-  }
-
-  /* VIP Cards */
-  .vip-cards {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .vip-card {
-    background: rgba(255 255 255 / 0.1);
-    border-radius: 12px;
-    padding: 20px;
-    width: 200px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    text-align: center;
-    transition: transform 0.3s ease;
-  }
-  .vip-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(255,255,255,0.5);
-  }
-  .vip-card h4 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-  }
-  .vip-card p {
-    font-weight: 700;
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  .vip-card ul {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-    text-align: left;
-  }
-  .vip-card ul li {
-    margin-bottom: 8px;
-  }
-  .vip-card button {
-    background-color: #4caf50;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .vip-card button:hover {
-    background-color: #388e3c;
-  }
-
-  /* Responsive */
-  @media (max-width: 700px) {
-    nav.user-nav {
-      flex-direction: column;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TRADING_world_bot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f0f0f0, #d0f0ff);
+      color: #333;
     }
-    nav.user-nav button {
-      margin: 5px 0;
+    header {
+      background-color: #007bff;
+      padding: 15px;
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
     }
-    .vip-cards {
-      flex-direction: column;
-      align-items: center;
+    .container {
+      padding: 20px;
     }
-    .vip-card {
-      width: 100%;
-      max-width: 300px;
+    .card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
     }
-  }
-
-  /* About Section */
-  #about {
-    padding: 20px;
-    background: rgba(255 255 255 / 0.1);
-    border-radius: 12px;
-    max-width: 700px;
-    margin: 20px auto;
-    color: #fff;
-  }
-</style>
+    .vip {
+      border-left: 5px solid #28a745;
+    }
+    .profile-card {
+      border-left: 5px solid #007bff;
+    }
+    .referral-card {
+      border-left: 5px solid #ffc107;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #ddd;
+      margin-top: 40px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
-<div id="container">
+<header>
+  TRADING_WORLD_BOT
+</header>
 
-  <!-- LOGIN -->
-  <div id="login-section">
-    <h2>Login</h2>
-    <div id="login-error" class="error"></div>
-    <label for="login-id">User ID</label>
-    <input type="text" id="login-id" placeholder="Enter your User ID" autocomplete="off" />
-    <label for="login-password">Password</label>
-    <input type="password" id="login-password" placeholder="Enter your password" autocomplete="off" />
-    <button id="login-btn">Login</button>
-    <div class="link" id="show-signup">New user? Click here to Sign Up</div>
+<div class="container">
+
+  <!-- 👤 User Profile Section -->
+  <div class="card profile-card">
+    <h2>User Profile</h2>
+    <p><strong>Name:</strong> John Doe</p>
+    <p><strong>User ID:</strong> USER123456</p>
+    <p><strong>Total Earned:</strong> 250 USDT</p>
+    <p><strong>Daily Interest Rate:</strong> 7%</p>
   </div>
 
-  <!-- SIGNUP -->
-  <div id="signup-section" style="display:none;">
-    <h2>Sign Up (User Only)</h2>
-    <div id="signup-error" class="error"></div>
-    <label for="signup-id">User ID</label>
-    <input type="text" id="signup-id" placeholder="Create your User ID" autocomplete="off" />
-    <label for="signup-password">Password</label>
-    <input type="password" id="signup-password" placeholder="Create your password" autocomplete="off" />
-    <button id="signup-btn">Sign Up</button>
-    <div class="link" id="show-login">Go back to Login</div>
+  <!-- 💎 VIP Packages Section -->
+  <div class="card vip">
+    <h2>VIP Packages</h2>
+    <ul>
+      <li>VIP 1 – 50 USDT – Daily Return: 7%</li>
+      <li>VIP 2 – 100 USDT – Daily Return: 7%</li>
+      <li>VIP 3 – 200 USDT – Daily Return: 7%</li>
+    </ul>
+    <button>Buy VIP</button>
   </div>
 
-  <!-- USER DASHBOARD -->
-  <div id="user-dashboard">
-    <header class="dashboard-header">
-      <h2>User Dashboard</h2>
-      <button id="logout-user">Logout</button>
-    </header>
-
-    <nav class="user-nav">
-      <button class="tab-btn active" data-section="overview">Overview</button>
-      <button class="tab-btn" data-section="vip">VIP Package</button>
-      <button class="tab-btn" data-section="withdraw">Withdrawal Request</button>
-      <button class="tab-btn" data-section="portfolio">Portfolio</button>
-      <button class="tab-btn" data-section="about">About Us</button>
-    </nav>
-
-    <section id="overview" class="active">
-      <p><strong>Balance:</strong> <span id="user-balance">0.00</span> USDT</p>
-      <p><strong>Daily Earnings (7% + VIP bonus):</strong> <span id="user-daily-earning">0.00</span> USDT</p>
-      <p><strong>VIP Level:</strong> <span id="user-vip-level">0</span></p>
-      <button id="deposit-btn" style="background:#1abc9c; margin-top:15px;">Deposit Request (Open Telegram Bot)</button>
-    </section>
-
-    <section id="vip">
-      <h3>Buy VIP Packages</h3>
-      <div class="vip-cards">
-        <div class="vip-card">
-          <h4>VIP Basic</h4>
-          <p>100 USDT</p>
-          <ul>
-            <li>7% Daily Return</li>
-            <li>Standard Support</li>
-          </ul>
-          <button onclick="buyVip('100')">Buy</button>
-        </div>
-        <div class="vip-card">
-          <h4>VIP Silver</h4>
-          <p>500 USDT</p>
-          <ul>
-            <li>8.5% Daily Return</li>
-            <li>Priority Support</li>
-            <li>Special Trading Tips</li>
-          </ul>
-          <button onclick="buyVip('500')">Buy</button>
-        </div>
-        <div class="vip-card">
-          <h4>VIP Gold</h4>
-          <p>1000 USDT</p>
-          <ul>
-            <li>10% Daily Return</li>
-            <li>24/7 Premium Support</li>
-            <li>Exclusive BTC Trading Insights</li>
-          </ul>
-          <button onclick="buyVip('1000')">Buy</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="withdraw">
-      <h3>Request Withdrawal</h3>
-      <label for="withdraw-amount">Amount</label>
-      <input type="number" id="withdraw-amount" min="1" placeholder="Enter amount" />
-      <button id="withdraw-request-btn">Request Withdraw</button>
-      <div id="withdraw-msg" class="error" style="margin-top:10px;"></div>
-    </section>
-
-    <section id="portfolio">
-      <h3>Your Portfolio</h3>
-      <p>VIP Packages Bought: <span id="vip-packages-count">0</span></p>
-      <p>Total Withdraw Requests: <span id="total-withdraw-requests">0</span></p>
-    </section>
-
-    <section id="about">
-      <h2>About Our Company</h2>
-      <p>
-        At <strong>World Earning System</strong>, we specialize in cryptocurrency trading, particularly <strong>Bitcoin (BTC) trading</strong>. Our experience provides you with safe, fast, and reliable investment opportunities.
-      </p>
-      <p>
-        Our team works on market analysis, modern trading strategies, and risk management to help your capital grow consistently.
-      </p>
-      <p>
-        We are committed to supporting your success in BTC trading with excellent VIP plans and personalized assistance.
-      </p>
-    </section>
+  <!-- 🎁 Referral Bonus Section -->
+  <div class="card referral-card">
+    <h2>Referral System</h2>
+    <p>Share your referral code and earn bonus:</p>
+    <ul>
+      <li>Level 1: 15%</li>
+      <li>Level 2: 7%</li>
+      <li>Level 3: 3%</li>
+    </ul>
+    <p><strong>Your Referral Code:</strong> <code>USER123456</code></p>
+    <button onclick="navigator.clipboard.writeText('USER123456')">Copy Code</button>
   </div>
 
-  <!-- AGENT DASHBOARD -->
-  <div id="agent-dashboard">
-    <header class="dashboard-header">
-      <h2>Agent Dashboard</h2>
-      <button id="logout-agent">Logout</button>
-    </header>
-
-    <label for="agent-search-id">Search User ID</label>
-    <input type="text" id="agent-search-id" placeholder="Enter User ID" autocomplete="off" />
-    <button id="agent-search-btn">Search</button>
-
-    <div id="agent-user-details" style="margin-top:15px; display:none;">
-      <h3>User Details</h3>
-      <p><strong>ID:</strong> <span id="agent-user-id"></span></p>
-      <p><strong>Balance:</strong> <span id="agent-user-balance"></span> USDT</p>
-      <p><strong>VIP Level:</strong> <span id="agent-user-vip"></span></p>
-      <p><strong>Daily Earnings:</strong> <span id="agent-user-daily"></span> USDT</p>
-
-      <h4>Deposit/Withdraw Actions</h4>
-      <label for="agent-deposit-amount">Deposit Amount</label>
-      <input type="number" id="agent-deposit-amount" min="1" placeholder="Enter Deposit Amount" />
-      <button id="agent-deposit-btn">Make Deposit</button>
-
-      <label for="agent-withdraw-amount">Withdraw Amount</label>
-      <input type="number" id="agent-withdraw-amount" min="1" placeholder="Enter Withdraw Amount" />
-      <button id="agent-withdraw-btn">Approve Withdraw</button>
-    </div>
-
-    <div style="margin-top:20px;">
-      <h3>Withdrawal Requests</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Approve</th>
-          </tr>
-        </thead>
-        <tbody id="withdraw-requests-tbody">
-          <!-- Withdraw requests listed here -->
-        </tbody>
-      </table>
-    </div>
+  <!-- 🔗 Deposit Request -->
+  <div class="card">
+    <h2>Deposit Balance</h2>
+    <p>Click below to request deposit from agent</p>
+    <a href="https://t.me/CostumereCare_Bot" target="_blank">
+      <button>Request Deposit</button>
+    </a>
   </div>
 
 </div>
 
-<script>
-(() => {
-  // Fixed Agents with passwords
-  const agents = {
-    'agent001': 'Nabin@1234',
-    'agent002': 'Rolex@4567',
-    'agent003': 'World@7890'
-  };
-
-  const USERS_KEY = 'rwb_users';
-  const WITHDRAW_KEY = 'rwb_withdraw_requests';
-
-  // Elements
-  const loginSection = document.getElementById('login-section');
-  const signupSection = document.getElementById('signup-section');
-  const userDashboard = document.getElementById('user-dashboard');
-  const agentDashboard = document.getElementById('agent-dashboard');
-
-  // Login inputs
-  const loginIdInput = document.getElementById('login-id');
-  const loginPassInput = document.getElementById('login-password');
-  const loginBtn = document.getElementById('login-btn');
-  const loginError = document.getElementById('login-error');
-
-  // Signup inputs
-  const signupIdInput = document.getElementById('signup-id');
-  const signupPassInput = document.getElementById('signup-password');
-  const signupBtn = document.getElementById('signup-btn');
-  const signupError = document.getElementById('signup-error');
-
-  // User dashboard elements
-  const userBalanceEl = document.getElementById('user-balance');
-  const userDailyEarningEl = document.getElementById('user-daily-earning');
-  const userVipLevelEl = document.getElementById('user-vip-level');
-  const depositBtn = document.getElementById('deposit-btn');
-
-  const withdrawAmountInput = document.getElementById('withdraw-amount');
-  const withdrawRequestBtn = document.getElementById('withdraw-request-btn');
-  const withdrawMsg = document.getElementById('withdraw-msg');
-
-  const vipPackagesCount = document.getElementById('vip-packages-count');
-  const totalWithdrawRequests = document.getElementById('total-withdraw-requests');
-
-  // User dashboard tabs
-  const tabButtons = document.querySelectorAll('nav.user-nav button.tab-btn');
-  const sections = document.querySelectorAll('section');
-
-  // Agent dashboard elements
-  const agentSearchIdInput = document.getElementById('agent-search-id');
-  const agentSearchBtn = document.getElementById('agent-search-btn');
-  const agentUserDetails = document.getElementById('agent-user-details');
-  const agentUserId = document.getElementById('agent-user-id');
-  const agentUserBalance = document.getElementById('agent-user-balance');
-  const agentUserVip = document.getElementById('agent-user-vip');
-  const agentUserDaily = document.getElementById('agent-user-daily');
-
-  const agentDepositAmount = document.getElementById('agent-deposit-amount');
-  const agentDepositBtn = document.getElementById('agent-deposit-btn');
-
-  const agentWithdrawAmount = document.getElementById('agent-withdraw-amount');
-  const agentWithdrawBtn = document.getElementById('agent-withdraw-btn');
-
-  const withdrawRequestsTbody = document.getElementById('withdraw-requests-tbody');
-
-  // Utility: load/save users
-  function loadUsers() {
-    const users = localStorage.getItem(USERS_KEY);
-    return users ? JSON.parse(users) : {};
-  }
-  function saveUsers(users) {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }
-
-  // Utility: load/save withdraw requests
-  function loadWithdrawRequests() {
-    const reqs = localStorage.getItem(WITHDRAW_KEY);
-    return reqs ? JSON.parse(reqs) : [];
-  }
-  function saveWithdrawRequests(reqs) {
-    localStorage.setItem(WITHDRAW_KEY, JSON.stringify(reqs));
-  }
-
-  // Show signup
-  document.getElementById('show-signup').onclick = () => {
-    loginSection.style.display = 'none';
-    signupSection.style.display = 'block';
-    clearErrors();
-  };
-  document.getElementById('show-login').onclick = () => {
-    signupSection.style.display = 'none';
-    loginSection.style.display = 'block';
-    clearErrors();
-  };
-
-  function clearErrors() {
-    loginError.textContent = '';
-    signupError.textContent = '';
-    withdrawMsg.textContent = '';
-  }
-
-  // Current logged in user or agent
-  let currentUser = null;
-  let currentUserType = null; // 'user' or 'agent'
-
-  // Login handler
-  loginBtn.onclick = () => {
-    clearErrors();
-    const id = loginIdInput.value.trim();
-    const password = loginPassInput.value.trim();
-
-    if (!id || !password) {
-      loginError.textContent = 'Please enter both User ID and Password.';
-      return;
-    }
-
-    // Check if agent
-    if (agents[id] && agents[id] === password) {
-      // Agent login success
-      currentUser = id;
-      currentUserType = 'agent';
-      showAgentDashboard();
-      return;
-    }
-
-    // Check user login
-    const users = loadUsers();
-    if (users[id] && users[id].password === password) {
-      currentUser = id;
-      currentUserType = 'user';
-      showUserDashboard();
-      return;
-    }
-
-    loginError.textContent = 'Invalid User ID or Password.';
-  };
-
-  // Signup handler
-  signupBtn.onclick = () => {
-    clearErrors();
-    const id = signupIdInput.value.trim();
-    const password = signupPassInput.value.trim();
-
-    if (!id || !password) {
-      signupError.textContent = 'Please enter both User ID and Password.';
-      return;
-    }
-    if (id.length < 4) {
-      signupError.textContent = 'User ID must be at least 4 characters.';
-      return;
-    }
-    if (password.length < 6) {
-      signupError.textContent = 'Password must be at least 6 characters.';
-      return;
-    }
-
-    let users = loadUsers();
-    if (users[id]) {
-      signupError.textContent = 'User ID already exists.';
-      return;
-    }
-
-    // Create new user
-    users[id] = {
-      password: password,
-      balance: 0,
-      vipLevel: 0,
-      packagesBought: 0,
-      withdrawRequests: []
-    };
-    saveUsers(users);
-    alert('Signup successful! Please login now.');
-    signupSection.style.display = 'none';
-    loginSection.style.display = 'block';
-  };
-
-  // Show user dashboard
-  function showUserDashboard() {
-    loginSection.style.display = 'none';
-    signupSection.style.display = 'none';
-    agentDashboard.style.display = 'none';
-    userDashboard.style.display = 'block';
-    renderUserDashboard();
-  }
-
-  // Show agent dashboard
-  function showAgentDashboard() {
-    loginSection.style.display = 'none';
-    signupSection.style.display = 'none';
-    userDashboard.style.display = 'none';
-    agentDashboard.style.display = 'block';
-    agentUserDetails.style.display = 'none';
-    renderWithdrawRequests();
-  }
-
-  // Logout buttons
-  document.getElementById('logout-user').onclick = () => {
-    logout();
-  };
-  document.getElementById('logout-agent').onclick = () => {
-    logout();
-  };
-
-  function logout() {
-    currentUser = null;
-    currentUserType = null;
-    userDashboard.style.display = 'none';
-    agentDashboard.style.display = 'none';
-    loginSection.style.display = 'block';
-    clearInputs();
-  }
-
-  function clearInputs() {
-    loginIdInput.value = '';
-    loginPassInput.value = '';
-    signupIdInput.value = '';
-    signupPassInput.value = '';
-    withdrawAmountInput.value = '';
-    agentSearchIdInput.value = '';
-    agentDepositAmount.value = '';
-    agentWithdrawAmount.value = '';
-  }
-
-  // Render user dashboard data
-  function renderUserDashboard() {
-    if (!currentUser) return;
-    const users = loadUsers();
-    const u = users[currentUser];
-    if (!u) return;
-
-    userBalanceEl.textContent = u.balance.toFixed(2);
-    userVipLevelEl.textContent = u.vipLevel;
-    // Calculate daily earnings: 7% base + 0.5% per VIP level (example)
-    const dailyReturnPercent = 7 + (u.vipLevel * 0.5);
-    const dailyEarnings = (u.balance * dailyReturnPercent) / 100;
-    userDailyEarningEl.textContent = dailyEarnings.toFixed(2);
-    vipPackagesCount.textContent = u.packagesBought;
-    totalWithdrawRequests.textContent = u.withdrawRequests.length;
-  }
-
-  // Deposit button action: open telegram bot link
-  depositBtn.onclick = () => {
-    window.open('https://t.me/CostumereCare_Bot', '_blank');
-  };
-
-  // VIP buying function
-  window.buyVip = function(amount) {
-    amount = parseFloat(amount);
-    const users = loadUsers();
-    const u = users[currentUser];
-    if (!u) return alert('User data not found.');
-
-    if (u.balance < amount) {
-      return alert('Insufficient balance.');
-    }
-
-    u.balance -= amount;
-    u.vipLevel += 1;
-    u.packagesBought += 1;
-    saveUsers(users);
-    alert(`VIP package purchased successfully! Your VIP level is now ${u.vipLevel}.`);
-    renderUserDashboard();
-  };
-
-  // Withdrawal request
-  withdrawRequestBtn.onclick = () => {
-    withdrawMsg.textContent = '';
-    const amount = parseFloat(withdrawAmountInput.value);
-    if (!amount || amount <= 0) {
-      withdrawMsg.textContent = 'Please enter a valid amount.';
-      return;
-    }
-    const users = loadUsers();
-    const u = users[currentUser];
-    if (!u) return;
-
-    if (u.balance < amount) {
-      withdrawMsg.textContent = 'Insufficient balance.';
-      return;
-    }
-
-    // Save withdraw request
-    const requests = loadWithdrawRequests();
-    requests.push({
-      id: currentUser,
-      amount: amount,
-      status: 'pending'
-    });
-    saveWithdrawRequests(requests);
-
-    // Deduct balance immediately
-    u.balance -= amount;
-    u.withdrawRequests.push(amount);
-    saveUsers(users);
-
-    withdrawMsg.style.color = 'lightgreen';
-    withdrawMsg.textContent = `Withdrawal request sent successfully. Please wait for agent approval.`;
-    renderUserDashboard();
-    withdrawAmountInput.value = '';
-    renderWithdrawRequests();
-  };
-
-  // User dashboard tabs switching
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      sections.forEach(sec => sec.classList.remove('active'));
-      const target = btn.getAttribute('data-section');
-      document.getElementById(target).classList.add('active');
-    });
-  });
-
-  // Agent dashboard: Search user
-  agentSearchBtn.onclick = () => {
-    const searchId = agentSearchIdInput.value.trim();
-    if (!searchId) return alert('Please enter User ID.');
-    const users = loadUsers();
-    const u = users[searchId];
-    if (!u) return alert('User not found.');
-    agentUserId.textContent = searchId;
-    agentUserBalance.textContent = u.balance.toFixed(2);
-    agentUserVip.textContent = u.vipLevel;
-    const dailyReturnPercent = 7 + (u.vipLevel * 0.5);
-    const dailyEarnings = (u.balance * dailyReturnPercent) / 100;
-    agentUserDaily.textContent = dailyEarnings.toFixed(2);
-    agentUserDetails.style.display = 'block';
-  };
-
-  // Agent deposit
-  agentDepositBtn.onclick = () => {
-    const amount = parseFloat(agentDepositAmount.value);
-    if (!amount || amount <= 0) return alert('Please enter a valid deposit amount.');
-    const userId = agentUserId.textContent;
-    if (!userId) return alert('Select a user first.');
-    const users = loadUsers();
-    const u = users[userId];
-    if (!u) return alert('User not found.');
-    u.balance += amount;
-    saveUsers(users);
-    alert(`${amount} USDT deposited successfully.`);
-    agentUserBalance.textContent = u.balance.toFixed(2);
-    renderWithdrawRequests();
-    agentDepositAmount.value = '';
-  };
-
-  // Agent withdraw approve
-  agentWithdrawBtn.onclick = () => {
-    const amount = parseFloat(agentWithdrawAmount.value);
-    if (!amount || amount <= 0) return alert('Please enter a valid withdraw amount.');
-    const userId = agentUserId.textContent;
-    if (!userId) return alert('Select a user first.');
-    const users = loadUsers();
-    const u = users[userId];
-    if (!u) return alert('User not found.');
-
-    // Find matching withdraw request with pending status
-    const requests = loadWithdrawRequests();
-    const index = requests.findIndex(r => r.id === userId && r.amount === amount && r.status === 'pending');
-    if (index === -1) return alert('No matching withdrawal request found.');
-
-    // Approve withdrawal (status change)
-    requests[index].status = 'approved';
-    saveWithdrawRequests(requests);
-
-    alert(`Withdrawal request of ${amount} USDT approved.`);
-    agentWithdrawAmount.value = '';
-    renderWithdrawRequests();
-  };
-
-  // Render withdraw requests for agent dashboard
-  function renderWithdrawRequests() {
-    const requests = loadWithdrawRequests();
-    withdrawRequestsTbody.innerHTML = '';
-    if (requests.length === 0) {
-      withdrawRequestsTbody.innerHTML = '<tr><td colspan="4">No withdrawal requests.</td></tr>';
-      return;
-    }
-    requests.forEach((req, i) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${req.id}</td>
-        <td>${req.amount.toFixed(2)}</td>
-        <td>${req.status}</td>
-        <td>
-          ${req.status === 'pending' ? `<button data-index="${i}" class="approve-btn">Approve</button>` : '-'}
-        </td>
-      `;
-      withdrawRequestsTbody.appendChild(tr);
-    });
-
-    // Add approve btn listeners
-    document.querySelectorAll('.approve-btn').forEach(btn => {
-      btn.onclick = (e) => {
-        const idx = parseInt(e.target.getAttribute('data-index'));
-        const requests = loadWithdrawRequests();
-        if (requests[idx]) {
-          requests[idx].status = 'approved';
-          saveWithdrawRequests(requests);
-          alert('Withdrawal request approved.');
-          renderWithdrawRequests();
-        }
-      };
-    });
-  }
-
-  // Initialize on load
-  function init() {
-    loginSection.style.display = 'block';
-    signupSection.style.display = 'none';
-    userDashboard.style.display = 'none';
-    agentDashboard.style.display = 'none';
-    clearInputs();
-  }
-  init();
-
-})();
-</script>
+<div class="footer">
+  &copy; 2025 TRADING_WORLD_BOT. Powered by USDT.
+</div>
 
 </body>
 </html>
