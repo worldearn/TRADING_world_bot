@@ -648,7 +648,7 @@
     u.vipLevel += 1;
     u.packagesBought += 1;
     saveUsers(users);
-    alert(VIP package purchased successfully! Your VIP level is now ${u.vipLevel}.);
+    alert(`VIP package purchased successfully! Your VIP level is now ${u.vipLevel}.`);
     renderUserDashboard();
   };
 
@@ -684,7 +684,7 @@
     saveUsers(users);
 
     withdrawMsg.style.color = 'lightgreen';
-    withdrawMsg.textContent = Withdrawal request sent successfully. Please wait for agent approval.;
+    withdrawMsg.textContent = `Withdrawal request sent successfully. Please wait for agent approval.`;
     renderUserDashboard();
     withdrawAmountInput.value = '';
     renderWithdrawRequests();
@@ -728,7 +728,7 @@
     if (!u) return alert('User not found.');
     u.balance += amount;
     saveUsers(users);
-    alert(${amount} USDT deposited successfully.);
+    alert(`${amount} USDT deposited successfully.`);
     agentUserBalance.textContent = u.balance.toFixed(2);
     renderWithdrawRequests();
     agentDepositAmount.value = '';
@@ -753,7 +753,7 @@
     requests[index].status = 'approved';
     saveWithdrawRequests(requests);
 
-    alert(Withdrawal request of ${amount} USDT approved.);
+    alert(`Withdrawal request of ${amount} USDT approved.`);
     agentWithdrawAmount.value = '';
     renderWithdrawRequests();
   };
@@ -768,14 +768,14 @@
     }
     requests.forEach((req, i) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = 
+      tr.innerHTML = `
         <td>${req.id}</td>
         <td>${req.amount.toFixed(2)}</td>
         <td>${req.status}</td>
         <td>
-          ${req.status === 'pending' ? <button data-index="${i}" class="approve-btn">Approve</button> : '-'}
+          ${req.status === 'pending' ? `<button data-index="${i}" class="approve-btn">Approve</button>` : '-'}
         </td>
-      ;
+      `;
       withdrawRequestsTbody.appendChild(tr);
     });
 
@@ -808,4 +808,4 @@
 </script>
 
 </body>
-</html>  
+</html>
