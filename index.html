@@ -2,973 +2,2012 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTC Trade Pro - Complete System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WORLD_TRADING_BOT</title>
     <style>
-        /* Main Styles */
         :root {
             --primary: #6c5ce7;
-            --secondary: #a29bfe;
+            --secondary: #00cec9;
+            --dark: #2d3436;
+            --light: #f5f6fa;
             --success: #00b894;
             --danger: #d63031;
             --warning: #fdcb6e;
-            --dark: #2d3436;
-            --light: #f5f6fa;
+            --info: #0984e3;
+            --background: #1a1a2e;
+            --card-bg: #16213e;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
+            background-color: var(--background);
+            color: var(--light);
             min-height: 100vh;
+            overflow-x: hidden;
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background: rgba(0,0,0,0.7);
-            padding: 20px 0;
-            border-bottom: 1px solid var(--primary);
-        }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-        }
-        
-        /* Auth Styles */
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            min-height: 80vh;
-            align-items: center;
-        }
-        
-        .auth-box {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 30px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 20px;
-        }
-        
-        .auth-tab {
-            flex: 1;
-            text-align: center;
             padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
         }
-        
-        .auth-tab.active {
-            border-bottom: 3px solid var(--primary);
-            font-weight: 600;
-        }
-        
-        .auth-form {
-            display: none;
-        }
-        
-        .auth-form.active {
-            display: block;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            font-size: 16px;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            font-size: 16px;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #5649d6;
-        }
-        
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-        
-        /* Dashboard Styles */
-        .dashboard {
-            display: none;
-            padding: 20px 0;
-        }
-        
-        .dashboard-header {
+
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background-color: var(--background);
+            z-index: 100;
         }
-        
-        .user-greeting {
-            font-size: 24px;
-            font-weight: 600;
-        }
-        
-        .user-balance {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--success);
-            margin: 10px 0;
-        }
-        
-        .dashboard-nav {
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--secondary);
             display: flex;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 30px;
+            align-items: center;
         }
-        
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-buttons button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
             transition: all 0.3s;
         }
-        
-        .nav-item.active {
-            background: var(--primary);
-            font-weight: 600;
+
+        .login-btn {
+            background-color: transparent;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
         }
-        
-        .dashboard-section {
+
+        .login-btn:hover {
+            background-color: var(--secondary);
+            color: var(--dark);
+        }
+
+        .register-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .register-btn:hover {
+            background-color: #5649c0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info span {
+            color: var(--secondary);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #b02a2a;
+        }
+
+        .main-content {
             display: none;
         }
-        
-        .dashboard-section.active {
-            display: block;
-        }
-        
-        /* Transaction History */
-        .transaction-history {
-            margin-top: 30px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 20px;
-        }
-        
-        .transaction-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .transaction-table th, 
-        .transaction-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .transaction-table th {
-            background: var(--primary);
-        }
-        
-        .transaction-type.deposit {
-            color: var(--success);
-        }
-        
-        .transaction-type.withdrawal {
-            color: var(--danger);
-        }
-        
-        /* VIP Packages */
-        .vip-packages {
+
+        .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .vip-card {
-            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(108, 92, 231, 0.2));
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(108, 92, 231, 0.3);
-            transition: all 0.3s;
-        }
-        
-        .vip-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .vip-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        
-        .vip-price {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 15px 0;
-            color: var(--success);
-        }
-        
-        /* Agent Dashboard */
-        .agent-search-box {
-            display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: 1fr;
             gap: 15px;
             margin-bottom: 20px;
         }
-        
-        .user-details-card {
-            background: rgba(0,0,0,0.3);
-            padding: 20px;
+
+        .card {
+            background-color: var(--card-bg);
             border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
-        /* Status Messages */
-        .status-message {
-            padding: 10px;
-            margin-top: 10px;
+
+        .card h3 {
+            margin-bottom: 12px;
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 8px 12px;
             border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            flex: 1;
             text-align: center;
         }
-        
-        .status-success {
-            background-color: rgba(0, 184, 148, 0.2);
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5649c0;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #00997a;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b02a2a;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #e6b956;
+        }
+
+        .vip-packages {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .vip-package {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .vip-package h4 {
+            color: var(--secondary);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .vip-package .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .vip-package .benefits {
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .vip-package .benefits li {
+            margin-bottom: 5px;
+            list-style-type: none;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .vip-package .benefits li:before {
+            content: "✓";
+            color: var(--success);
+            position: absolute;
+            left: 0;
+        }
+
+        .transaction-history {
+            margin-top: 20px;
+        }
+
+        .transaction-history h3 {
+            margin-bottom: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-completed {
             color: var(--success);
         }
-        
-        .status-error {
-            background-color: rgba(214, 48, 49, 0.2);
+
+        .status-pending {
+            color: var(--warning);
+        }
+
+        .status-failed {
             color: var(--danger);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: var(--secondary);
+            font-size: 18px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .admin-panel, .agent-section {
+            margin-top: 20px;
+        }
+
+        .admin-controls, .agent-controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .login-container, .register-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container h2, .register-container h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            font-size: 20px;
+        }
+
+        .company-profile {
+            margin-top: 20px;
+        }
+
+        .company-profile h3 {
+            margin-bottom: 12px;
+        }
+
+        .company-profile p {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .sync-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .nav-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            border-bottom: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .request-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .vip-packages {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .admin-controls, .agent-controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .vip-packages {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="BTC" style="height:40px;margin-right:10px;">
-                BTC Trade Pro
+    <div class="container">
+        <header>
+            <div class="logo">WORLD<span>TRADING_BOT</span></div>
+            <div id="authButtons" class="auth-buttons">
+                <button class="login-btn" onclick="showModal('loginModal')">Login</button>
+                <button class="register-btn" onclick="showModal('registerModal')">Register</button>
             </div>
-        </div>
-    </header>
+            <div id="userInfo" class="user-info" style="display: none;">
+                <span id="usernameDisplay"></span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
 
-    <!-- Authentication Section -->
-    <div class="auth-container">
-        <div class="container">
-            <div class="auth-box">
-                <div class="auth-tabs">
-                    <div class="auth-tab active" onclick="showAuthForm('login')">Login</div>
-                    <div class="auth-tab" onclick="showAuthForm('signup')">Sign Up</div>
-                </div>
-                
-                <!-- Login Form -->
-                <div id="login-form" class="auth-form active">
-                    <div class="form-group">
-                        <label for="login-username">Username</label>
-                        <input type="text" id="login-username" class="form-control" placeholder="Enter your username">
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" class="form-control" placeholder="Enter your password">
-                    </div>
-                    <button class="btn btn-primary btn-block" onclick="login()">Login</button>
-                    <div class="text-center" style="margin-top:15px;">
-                        <a href="#" style="color:var(--secondary);">Forgot password?</a>
-                    </div>
-                </div>
-                
-                <!-- Signup Form -->
-                <div id="signup-form" class="auth-form">
-                    <div class="form-group">
-                        <label for="signup-username">Username</label>
-                        <input type="text" id="signup-username" class="form-control" placeholder="Choose a username">
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-password">Password</label>
-                        <input type="password" id="signup-password" class="form-control" placeholder="Create a password">
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-confirm-password">Confirm Password</label>
-                        <input type="password" id="signup-confirm-password" class="form-control" placeholder="Confirm your password">
-                    </div>
-                    <button class="btn btn-primary btn-block" onclick="signup()">Create Account</button>
-                </div>
+        <div id="loginContainer" class="login-container" style="display: none;">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter your username">
             </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="login()">Login</button>
+            <p id="loginError" style="color: var(--danger); margin-top: 10px; display: none;">Invalid username or password</p>
         </div>
-    </div>
 
-    <!-- User Dashboard -->
-    <div id="user-dashboard" class="dashboard">
-        <div class="container">
-            <div class="dashboard-header">
-                <div>
-                    <div class="user-greeting">Welcome, <span id="username-display"></span>!</div>
-                    <div class="user-balance">$<span id="user-balance">0.00</span> USDT</div>
-                </div>
-                <button class="btn" onclick="logout()" style="background:var(--danger);">Logout</button>
+        <div id="registerContainer" class="register-container" style="display: none;">
+            <h2>Register</h2>
+            <div class="form-group">
+                <label for="registerUsername">Username</label>
+                <input type="text" id="registerUsername" placeholder="Choose a username">
             </div>
-            
-            <div class="dashboard-nav">
-                <div class="nav-item active" data-section="overview" onclick="showSection('overview')">Overview</div>
-                <div class="nav-item" data-section="vip" onclick="showSection('vip')">VIP Packages</div>
-                <div class="nav-item" data-section="withdraw" onclick="showSection('withdraw')">Withdraw</div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Choose a password">
             </div>
-            
-            <!-- Overview Section -->
-            <div id="overview-section" class="dashboard-section active">
-                <div style="background:rgba(0,0,0,0.3); padding:25px; border-radius:10px;">
-                    <h3 style="margin-bottom:20px;">Account Summary</h3>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
-                        <div style="background:rgba(0,0,0,0.5); padding:20px; border-radius:10px;">
-                            <div style="font-size:14px; color:var(--secondary);">VIP Level</div>
-                            <div style="font-size:24px; font-weight:700;"><span id="vip-level">0</span></div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.5); padding:20px; border-radius:10px;">
-                            <div style="font-size:14px; color:var(--secondary);">Daily Earnings</div>
-                            <div style="font-size:24px; font-weight:700; color:var(--success);">$<span id="daily-earnings">0.00</span></div>
+            <div class="form-group">
+                <label for="registerRole">Role</label>
+                <select id="registerRole">
+                    <option value="user">User</option>
+                    <option value="agent">Agent</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="register()">Register</button>
+            <p id="registerError" style="color: var(--danger); margin-top: 10px; display: none;">Username already exists</p>
+            <p id="registerSuccess" style="color: var(--success); margin-top: 10px; display: none;">Registration successful! Please login.</p>
+        </div>
+
+        <div id="mainContent" class="main-content">
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</div>
+                <div class="nav-tab" onclick="switchTab('transactions')">Transactions</div>
+                <div class="nav-tab" onclick="switchTab('company')">Company</div>
+                <div id="requestsTabBtn" class="nav-tab" onclick="switchTab('requests')" style="display: none;">Requests</div>
+            </div>
+
+            <div id="dashboardTab" class="tab-content active">
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>Account Balance</h3>
+                        <div class="balance" id="userBalance">$0.00</div>
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="showModal('depositModal')">Deposit</button>
+                            <button class="btn btn-danger" onclick="showModal('withdrawModal')">Withdraw</button>
                         </div>
                     </div>
+                    <div class="card">
+                        <h3>VIP Status</h3>
+                        <p id="vipStatus">Basic Member</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-warning" onclick="showModal('vipModal')">Upgrade</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Total Earnings</h3>
+                        <div class="balance" id="totalEarnings">$0.00</div>
+                        <p style="font-size: 14px; color: rgba(255,255,255,0.7);" id="earningRate">Daily: $0.00</p>
+                    </div>
                 </div>
-                
-                <div class="transaction-history">
+
+                <div class="card">
+                    <h3>VIP Packages</h3>
+                    <div class="vip-packages">
+                        <div class="vip-package">
+                            <h4>Silver Package</h4>
+                            <div class="price">$500</div>
+                            <ul class="benefits">
+                                <li>5% Daily Returns</li>
+                                <li>Basic Support</li>
+                                <li>Standard Trading Signals</li>
+                            </ul>
+                            <button class="btn btn-primary" onclick="selectPackage('silver')">Select</button>
+                        </div>
+                        <div class="vip-package">
+                            <h4>Gold Package</h4>
+                            <div class="price">$2,000</div>
+                            <ul class="benefits">
+                                <li>8% Daily Returns</li>
+                                <li>Priority Support</li>
+                                <li>Advanced Trading Signals</li>
+                                <li>Weekly Analysis</li>
+                            </ul>
+                            <button class="btn btn-primary" onclick="selectPackage('gold')">Select</button>
+                        </div>
+                        <div class="vip-package">
+                            <h4>Platinum Package</h4>
+                            <div class="price">$5,000</div>
+                            <ul class="benefits">
+                                <li>12% Daily Returns</li>
+                                <li>24/7 VIP Support</li>
+                                <li>Premium Trading Signals</li>
+                                <li>Daily Analysis</li>
+                                <li>Personal Account Manager</li>
+                            </ul>
+                            <button class="btn btn-primary" onclick="selectPackage('platinum')">Select</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="agentSection" class="agent-section" style="display: none;">
+                    <h3>Agent Controls</h3>
+                    <div class="agent-controls">
+                        <div class="card">
+                            <div class="form-group">
+                                <label for="agentUsername">User</label>
+                                <select id="agentUsername" style="width: 100%;">
+                                    <!-- Users will be populated here -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="agentAmount">Amount</label>
+                                <input type="number" id="agentAmount" placeholder="Enter amount">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-success" onclick="agentDeposit()">Deposit for User</button>
+                                <button class="btn btn-danger" onclick="agentWithdraw()">Withdraw for User</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adminPanel" class="admin-panel" style="display: none;">
+                    <h3>Admin Controls</h3>
+                    <div class="admin-controls">
+                        <div class="card">
+                            <h3>Manage Funds</h3>
+                            <div class="form-group">
+                                <label for="adminUsername">Username</label>
+                                <select id="adminUsername" style="width: 100%;">
+                                    <!-- Users will be populated here -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminAmount">Amount</label>
+                                <input type="number" id="adminAmount" placeholder="Enter amount">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-success" onclick="adminAddFunds()">Add Funds</button>
+                                <button class="btn btn-danger" onclick="adminDeductFunds()">Deduct Funds</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>System Statistics</h3>
+                            <p>Total Users: <span id="totalUsers">0</span></p>
+                            <p>Total Deposits: $<span id="totalDeposits">0</span></p>
+                            <p>Total Withdrawals: $<span id="totalWithdrawals">0</span></p>
+                            <p>Company Profit: $<span id="companyProfit">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="transactionsTab" class="tab-content">
+                <div class="card transaction-history">
                     <h3>Transaction History</h3>
-                    <table class="transaction-table">
+                    <table id="transactionTable">
                         <thead>
                             <tr>
                                 <th>Date</th>
                                 <th>Type</th>
                                 <th>Amount</th>
-                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
-                        <tbody id="user-transactions">
-                            <!-- Transactions will load here -->
+                        <tbody id="transactionBody">
+                            <!-- Transactions will be added here -->
                         </tbody>
                     </table>
                 </div>
             </div>
-            
-            <!-- VIP Packages Section -->
-            <div id="vip-section" class="dashboard-section">
-                <h2 style="margin-bottom:20px;">VIP Packages</h2>
-                <p style="margin-bottom:20px; color:var(--secondary);">Upgrade your account to earn more daily profits</p>
-                
-                <div class="vip-packages">
-                    <div class="vip-card">
-                        <h3 class="vip-title">Starter Package</h3>
-                        <div class="vip-price">$100</div>
-                        <ul style="list-style:none; margin-bottom:20px;">
-                            <li style="padding:8px 0;">✓ 5% Daily Profit</li>
-                            <li style="padding:8px 0;">✓ Basic Support</li>
-                        </ul>
-                        <button class="btn btn-primary btn-block" onclick="buyVipPackage(1, 100)">Purchase</button>
-                    </div>
-                    
-                    <div class="vip-card">
-                        <h3 class="vip-title">Advanced Package</h3>
-                        <div class="vip-price">$500</div>
-                        <ul style="list-style:none; margin-bottom:20px;">
-                            <li style="padding:8px 0;">✓ 7% Daily Profit</li>
-                            <li style="padding:8px 0;">✓ Priority Support</li>
-                        </ul>
-                        <button class="btn btn-primary btn-block" onclick="buyVipPackage(2, 500)">Purchase</button>
-                    </div>
-                    
-                    <div class="vip-card">
-                        <h3 class="vip-title">Professional Package</h3>
-                        <div class="vip-price">$1000</div>
-                        <ul style="list-style:none; margin-bottom:20px;">
-                            <li style="padding:8px 0;">✓ 10% Daily Profit</li>
-                            <li style="padding:8px 0;">✓ VIP Support</li>
-                        </ul>
-                        <button class="btn btn-primary btn-block" onclick="buyVipPackage(3, 1000)">Purchase</button>
-                    </div>
+
+            <div id="companyTab" class="tab-content">
+                <div class="card company-profile">
+                    <h3>Company Profile</h3>
+                    <p>WORLD_TRADING_BOT is a leading cryptocurrency trading platform that provides automated trading solutions to users worldwide.</p>
+                    <p>Our mission is to make cryptocurrency trading accessible to everyone through our advanced trading algorithms and VIP membership packages.</p>
+                    <h3 style="margin-top: 20px;">Contact Information</h3>
+                    <p>Email: support@worldtradingbot.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                    <p>Address: 123 Crypto Street, Blockchain City</p>
                 </div>
             </div>
-            
-            <!-- Withdraw Section -->
-            <div id="withdraw-section" class="dashboard-section">
-                <div style="background:rgba(0,0,0,0.3); padding:25px; border-radius:10px; max-width:500px; margin:0 auto;">
-                    <h2 style="margin-bottom:20px;">Withdraw Funds</h2>
-                    <div class="form-group">
-                        <label for="withdraw-amount">Amount (USDT)</label>
-                        <input type="number" id="withdraw-amount" class="form-control" placeholder="Enter amount">
+
+            <div id="requestsTab" class="tab-content">
+                <div class="card">
+                    <h3>Pending Requests</h3>
+                    <div id="pendingRequests">
+                        <!-- Requests will be added here -->
                     </div>
-                    <div class="form-group">
-                        <label for="withdraw-wallet">Wallet Address</label>
-                        <input type="text" id="withdraw-wallet" class="form-control" placeholder="Enter your USDT wallet">
-                    </div>
-                    <button class="btn btn-primary btn-block" onclick="requestWithdrawal()">Request Withdrawal</button>
-                    <div id="withdraw-message" class="status-message" style="margin-top:15px;"></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Agent Dashboard -->
-    <div id="agent-dashboard" class="dashboard">
-        <div class="container">
-            <div class="dashboard-header">
-                <div class="user-greeting">Agent Dashboard</div>
-                <button class="btn" onclick="logout()" style="background:var(--danger);">Logout</button>
-            </div>
-            
-            <div style="background:rgba(0,0,0,0.3); padding:25px; border-radius:10px; margin-bottom:30px;">
-                <h2 style="margin-bottom:20px;">User Management</h2>
-                <div class="agent-search-box">
-                    <input type="text" id="agent-search-input" class="form-control" placeholder="Search user by username">
-                    <button class="btn btn-primary" onclick="agentSearchUser()">Search</button>
+        <!-- Deposit Modal -->
+        <div id="depositModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Deposit Funds</h3>
+                    <button class="close-btn" onclick="hideModal('depositModal')">&times;</button>
                 </div>
-                
-                <div id="agent-user-details" class="user-details-card" style="display:none;">
-                    <h3 style="margin-bottom:15px;">User Details</h3>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:20px;">
-                        <div style="background:rgba(0,0,0,0.5); padding:15px; border-radius:10px;">
-                            <div style="font-size:14px; color:var(--secondary);">Username</div>
-                            <div style="font-size:18px; font-weight:600;"><span id="agent-detail-username"></span></div>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.5); padding:15px; border-radius:10px;">
-                            <div style="font-size:14px; color:var(--secondary);">Balance</div>
-                            <div style="font-size:18px; font-weight:600; color:var(--success);">$<span id="agent-detail-balance">0.00</span></div>
-                        </div>
-                    </div>
-                    
-                    <div style="background:rgba(0,0,0,0.5); padding:20px; border-radius:10px;">
-                        <h4 style="margin-bottom:15px;">Account Actions</h4>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                            <div>
-                                <label for="agent-deposit-amount">Deposit Amount</label>
-                                <input type="number" id="agent-deposit-amount" class="form-control" placeholder="Amount in USDT">
-                                <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="agentDeposit()">Deposit</button>
-                            </div>
-                            <div>
-                                <label for="agent-withdraw-amount">Withdraw Amount</label>
-                                <input type="number" id="agent-withdraw-amount" class="form-control" placeholder="Amount in USDT">
-                                <button class="btn" style="margin-top:10px; width:100%; background:var(--warning);" onclick="agentWithdraw()">Withdraw</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="depositAmount">Amount</label>
+                    <input type="number" id="depositAmount" placeholder="Enter amount to deposit">
+                </div>
+                <div class="form-group">
+                    <label for="depositMethod">Payment Method</label>
+                    <select id="depositMethod">
+                        <option value="bitcoin">Bitcoin</option>
+                        <option value="ethereum">Ethereum</option>
+                        <option value="usdt">USDT</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="hideModal('depositModal')">Cancel</button>
+                    <button class="btn btn-success" onclick="processDeposit()">Submit Request</button>
                 </div>
             </div>
-            
-            <div style="margin-top:30px;">
-                <h2 style="margin-bottom:20px;">Withdrawal Requests</h2>
-                <table class="transaction-table">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Amount</th>
-                            <th>Wallet</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="withdraw-requests-list">
-                        <!-- Withdrawal requests will appear here -->
-                    </tbody>
-                </table>
+        </div>
+
+        <!-- Withdraw Modal -->
+        <div id="withdrawModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Withdraw Funds</h3>
+                    <button class="close-btn" onclick="hideModal('withdrawModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawAmount">Amount</label>
+                    <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw">
+                </div>
+                <div class="form-group">
+                    <label for="withdrawMethod">Payment Method</label>
+                    <select id="withdrawMethod">
+                        <option value="bitcoin">Bitcoin</option>
+                        <option value="ethereum">Ethereum</option>
+                        <option value="usdt">USDT</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawWallet">Wallet Address</label>
+                    <input type="text" id="withdrawWallet" placeholder="Enter your wallet address">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="hideModal('withdrawModal')">Cancel</button>
+                    <button class="btn btn-success" onclick="processWithdraw()">Submit Request</button>
+                </div>
             </div>
+        </div>
+
+        <!-- VIP Modal -->
+        <div id="vipModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Upgrade VIP Status</h3>
+                    <button class="close-btn" onclick="hideModal('vipModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Select Package</label>
+                    <div style="display: flex; gap: 10px; margin-top: 10px; flex-direction: column;">
+                        <button class="btn" onclick="selectPackage('silver')" style="background-color: #c0c0c0;">Silver ($500)</button>
+                        <button class="btn" onclick="selectPackage('gold')" style="background-color: #ffd700;">Gold ($2000)</button>
+                        <button class="btn" onclick="selectPackage('platinum')" style="background-color: #e5e4e2;">Platinum ($5000)</button>
+                    </div>
+                </div>
+                <div id="selectedPackageInfo" style="margin-top: 20px; display: none;">
+                    <h4 id="packageName" style="color: var(--secondary);"></h4>
+                    <p id="packagePrice" style="font-weight: bold;"></p>
+                    <div id="packageBenefits"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="hideModal('vipModal')">Cancel</button>
+                    <button id="confirmUpgradeBtn" class="btn btn-success" onclick="confirmUpgrade()" style="display: none;">Confirm Upgrade</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Login</h3>
+                    <button class="close-btn" onclick="hideModal('loginModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label for="modalLoginUsername">Username</label>
+                    <input type="text" id="modalLoginUsername" placeholder="Enter your username">
+                </div>
+                <div class="form-group">
+                    <label for="modalLoginPassword">Password</label>
+                    <input type="password" id="modalLoginPassword" placeholder="Enter your password">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="hideModal('loginModal')">Cancel</button>
+                    <button class="btn btn-success" onclick="modalLogin()">Login</button>
+                </div>
+                <p id="modalLoginError" style="color: var(--danger); margin-top: 10px; display: none;">Invalid username or password</p>
+            </div>
+        </div>
+
+        <!-- Register Modal -->
+        <div id="registerModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Register</h3>
+                    <button class="close-btn" onclick="hideModal('registerModal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label for="modalRegisterUsername">Username</label>
+                    <input type="text" id="modalRegisterUsername" placeholder="Choose a username">
+                </div>
+                <div class="form-group">
+                    <label for="modalRegisterPassword">Password</label>
+                    <input type="password" id="modalRegisterPassword" placeholder="Choose a password">
+                </div>
+                <div class="form-group">
+                    <label for="modalRegisterRole">Role</label>
+                    <select id="modalRegisterRole">
+                        <option value="user">User</option>
+                        <option value="agent">Agent</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="hideModal('registerModal')">Cancel</button>
+                    <button class="btn btn-success" onclick="modalRegister()">Register</button>
+                </div>
+                <p id="modalRegisterError" style="color: var(--danger); margin-top: 10px; display: none;">Username already exists</p>
+                <p id="modalRegisterSuccess" style="color: var(--success); margin-top: 10px; display: none;">Registration successful! Please login.</p>
+            </div>
+        </div>
+
+        <div class="sync-notification" id="syncNotification">
+            Data synchronized successfully!
         </div>
     </div>
 
     <script>
-        // Database
-        let users = JSON.parse(localStorage.getItem('btc_users')) || {};
-        let transactions = JSON.parse(localStorage.getItem('btc_transactions')) || {};
-        let withdrawals = JSON.parse(localStorage.getItem('btc_withdrawals')) || [];
-        let currentUser = null;
-        
-        // Initialize with some demo data if empty
-        function initializeData() {
-            if (Object.keys(users).length === 0) {
-                // Demo users
-                users = {
-                    "user1": { password: "pass1", balance: 500, vipLevel: 0 },
-                    "agent1": { password: "agent1", balance: 0, isAgent: true }
-                };
-                
-                // Demo transactions
-                transactions = {
-                    "user1": [
-                        {
-                            date: new Date().toISOString(),
-                            type: "deposit",
-                            amount: 500,
-                            description: "Initial deposit"
-                        }
-                    ]
-                };
-                
-                saveAllData();
-            }
-        }
-        
-        // Save all data to localStorage
-        function saveAllData() {
-            localStorage.setItem('btc_users', JSON.stringify(users));
-            localStorage.setItem('btc_transactions', JSON.stringify(transactions));
-            localStorage.setItem('btc_withdrawals', JSON.stringify(withdrawals));
-        }
-        
-        // Show auth form
-        function showAuthForm(formType) {
-            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
-            
-            document.querySelector(`.auth-tab[onclick="showAuthForm('${formType}')"]`).classList.add('active');
-            document.getElementById(`${formType}-form`).classList.add('active');
-        }
-        
-        // Login function
-        function login() {
-            const username = document.getElementById('login-username').value.trim();
-            const password = document.getElementById('login-password').value;
-            
-            if (!username || !password) {
-                alert("Please enter both username and password");
-                return;
-            }
-            
-            if (!users[username] || users[username].password !== password) {
-                alert("Invalid username or password");
-                return;
-            }
-            
-            currentUser = username;
-            
-            if (users[username].isAgent) {
-                document.querySelector('.auth-container').style.display = 'none';
-                document.getElementById('agent-dashboard').style.display = 'block';
-                loadAgentDashboard();
-            } else {
-                document.querySelector('.auth-container').style.display = 'none';
-                document.getElementById('user-dashboard').style.display = 'block';
-                loadUserDashboard();
-            }
-        }
-        
-        // Signup function
-        function signup() {
-            const username = document.getElementById('signup-username').value.trim();
-            const password = document.getElementById('signup-password').value;
-            const confirmPassword = document.getElementById('signup-confirm-password').value;
-            
-            if (!username || !password || !confirmPassword) {
-                alert("Please fill all fields");
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert("Passwords don't match");
-                return;
-            }
-            
-            if (users[username]) {
-                alert("Username already exists");
-                return;
-            }
-            
-            // Create new user
-            users[username] = {
-                password: password,
-                balance: 0,
-                vipLevel: 0
+        // Initialize data structure if not exists
+        if (!localStorage.getItem('cryptoUsers')) {
+            const initialUsers = {
+                'admin1': { 
+                    password: 'admin123', 
+                    balance: 0, 
+                    role: 'admin', 
+                    vip: 'none', 
+                    transactions: [],
+                    earnings: 0
+                },
+                'user1': { 
+                    password: 'pass1', 
+                    balance: 0, 
+                    role: 'user', 
+                    vip: 'none', 
+                    transactions: [],
+                    earnings: 0
+                },
+                'user2': { 
+                    password: 'pass2', 
+                    balance: 0, 
+                    role: 'user', 
+                    vip: 'none', 
+                    transactions: [],
+                    earnings: 0
+                },
+                'user3': { 
+                    password: 'pass3', 
+                    balance: 0, 
+                    role: 'user', 
+                    vip: 'none', 
+                    transactions: [],
+                    earnings: 0
+                },
+                'user4': { 
+                    password: 'pass4', 
+                    balance: 0, 
+                    role: 'user', 
+                    vip: 'none', 
+                    transactions: [],
+                    earnings: 0
+                },
+                'user5': { 
+                    password: 'pass5', 
+                    balance: 0, 
+                    role: 'user', 
+                    vip: 'none', 
+                    transactions: [],
+                    earnings: 0
+                },
+                'Gyenendra01': { 
+                    password: 'bake', 
+                    balance: 0, 
+                    role: 'agent', 
+                    vip: 'none', 
+                    transactions: [],
+                    earnings: 0
+                }
             };
-            
-            // Initialize empty transactions array
-            transactions[username] = [];
-            
-            saveAllData();
-            alert("Account created successfully! Please login.");
-            showAuthForm('login');
+            localStorage.setItem('cryptoUsers', JSON.stringify(initialUsers));
         }
-        
-        // Logout function
-        function logout() {
-            currentUser = null;
-            document.querySelector('.dashboard').style.display = 'none';
-            document.querySelector('.auth-container').style.display = 'flex';
-            showAuthForm('login');
+
+        if (!localStorage.getItem('allTransactions')) {
+            localStorage.setItem('allTransactions', JSON.stringify([]));
         }
-        
-        // Show section in dashboard
-        function showSection(sectionId) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.dashboard-section').forEach(section => section.classList.remove('active'));
-            
-            document.querySelector(`.nav-item[data-section="${sectionId}"]`).classList.add('active');
-            document.getElementById(`${sectionId}-section`).classList.add('active');
+
+        if (!localStorage.getItem('companyProfit')) {
+            localStorage.setItem('companyProfit', '0');
         }
-        
-        // Load user dashboard
-        function loadUserDashboard() {
-            const user = users[currentUser];
-            document.getElementById('username-display').textContent = currentUser;
-            document.getElementById('user-balance').textContent = user.balance.toFixed(2);
-            document.getElementById('vip-level').textContent = user.vipLevel;
-            
-            // Calculate daily earnings
-            let dailyRate = 0;
-            if (user.vipLevel === 1) dailyRate = 0.05;
-            else if (user.vipLevel === 2) dailyRate = 0.07;
-            else if (user.vipLevel === 3) dailyRate = 0.10;
-            
-            const dailyEarnings = user.balance * dailyRate;
-            document.getElementById('daily-earnings').textContent = dailyEarnings.toFixed(2);
-            
-            // Load transactions
-            loadUserTransactions();
+
+        if (!localStorage.getItem('pendingRequests')) {
+            localStorage.setItem('pendingRequests', JSON.stringify([]));
         }
-        
-        // Load user transactions
-        function loadUserTransactions() {
-            const userTransactions = transactions[currentUser] || [];
-            const tbody = document.getElementById('user-transactions');
+
+        // Global variables
+        let currentUser = null;
+        let syncInterval = null;
+        let dataUpdateListeners = [];
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            
+            // For demo purposes, simulate data sync every 5 seconds
+            syncInterval = setInterval(syncData, 5000);
+            
+            // Listen for storage events to handle real-time updates across tabs/devices
+            window.addEventListener('storage', function(event) {
+                if (event.key === 'cryptoUsers' || event.key === 'allTransactions' || 
+                    event.key === 'companyProfit' || event.key === 'pendingRequests') {
+                    // Update UI when data changes in another tab/device
+                    if (currentUser) {
+                        updateDashboard();
+                        loadTransactionHistory();
+                        
+                        if (currentUser.role === 'admin') {
+                            loadAdminData();
+                        }
+                        
+                        if (currentUser.role === 'agent') {
+                            loadAgentData();
+                            loadPendingRequests();
+                        }
+                    }
+                }
+            });
+        });
+
+        // Check if user is logged in
+        function checkLoginStatus() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                currentUser = JSON.parse(loggedInUser);
+                showMainContent();
+            } else {
+                showAuthButtons();
+            }
+        }
+
+        // Show authentication buttons
+        function showAuthButtons() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('registerContainer').style.display = 'none';
+        }
+
+        // Show main content
+        function showMainContent() {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('registerContainer').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('usernameDisplay').textContent = currentUser.username;
+            document.getElementById('mainContent').style.display = 'block';
+
+            updateDashboard();
+            loadTransactionHistory();
+            
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminPanel').style.display = 'block';
+                loadAdminData();
+                document.getElementById('requestsTabBtn').style.display = 'block';
+                loadPendingRequests();
+            } else {
+                document.getElementById('adminPanel').style.display = 'none';
+            }
+
+            if (currentUser.role === 'agent') {
+                document.getElementById('agentSection').style.display = 'block';
+                loadAgentData();
+                document.getElementById('requestsTabBtn').style.display = 'block';
+                loadPendingRequests();
+            } else {
+                document.getElementById('agentSection').style.display = 'none';
+                document.getElementById('requestsTabBtn').style.display = 'none';
+            }
+        }
+
+        // Switch between tabs
+        function switchTab(tabName) {
+            // Update active tab
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show corresponding content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Load requests if needed
+            if (tabName === 'requests' && (currentUser.role === 'admin' || currentUser.role === 'agent')) {
+                loadPendingRequests();
+            }
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[currentUser.username];
+            
+            // Update balance
+            document.getElementById('userBalance').textContent = `$${user.balance.toFixed(2)}`;
+            
+            // Update VIP status
+            let vipStatus = 'Basic Member';
+            if (user.vip === 'silver') vipStatus = 'Silver Member';
+            if (user.vip === 'gold') vipStatus = 'Gold Member';
+            if (user.vip === 'platinum') vipStatus = 'Platinum Member';
+            document.getElementById('vipStatus').textContent = vipStatus;
+            
+            // Update earnings
+            document.getElementById('totalEarnings').textContent = `$${user.earnings.toFixed(2)}`;
+            
+            // Update earning rate based on VIP status
+            let rate = 0;
+            if (user.vip === 'silver') rate = 0.05;
+            if (user.vip === 'gold') rate = 0.08;
+            if (user.vip === 'platinum') rate = 0.12;
+            document.getElementById('earningRate').textContent = `Daily: $${(user.balance * rate).toFixed(2)}`;
+        }
+
+        // Load transaction history
+        function loadTransactionHistory() {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[currentUser.username];
+            const tbody = document.getElementById('transactionBody');
             tbody.innerHTML = '';
             
-            if (userTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No transactions found</td></tr>';
-                return;
-            }
-            
-            // Show newest first
-            userTransactions.slice().reverse().forEach(tx => {
-                const tr = document.createElement('tr');
-                const typeClass = tx.type === 'deposit' ? 'transaction-type deposit' : 'transaction-type withdrawal';
-                
-                tr.innerHTML = `
-                    <td>${new Date(tx.date).toLocaleString()}</td>
-                    <td class="${typeClass}">${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</td>
-                    <td>$${tx.amount.toFixed(2)}</td>
-                    <td>${tx.description}</td>
+            user.transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${transaction.date}</td>
+                    <td>${transaction.type}</td>
+                    <td>$${transaction.amount.toFixed(2)}</td>
+                    <td class="status-${transaction.status}">${transaction.status}</td>
+                    <td>${transaction.details || ''}</td>
                 `;
-                tbody.appendChild(tr);
+                tbody.appendChild(row);
             });
         }
-        
-        // Buy VIP package
-        function buyVipPackage(level, amount) {
-            const user = users[currentUser];
+
+        // Load admin data
+        function loadAdminData() {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+            const companyProfit = parseFloat(localStorage.getItem('companyProfit'));
             
-            if (user.balance < amount) {
-                alert("Insufficient balance");
+            // Populate user dropdown
+            const userSelect = document.getElementById('adminUsername');
+            userSelect.innerHTML = '';
+            Object.keys(users).forEach(username => {
+                if (users[username].role !== 'admin') {
+                    const option = document.createElement('option');
+                    option.value = username;
+                    option.textContent = username;
+                    userSelect.appendChild(option);
+                }
+            });
+            
+            // Update statistics
+            document.getElementById('totalUsers').textContent = Object.keys(users).length - 1; // exclude admin
+            
+            let totalDeposits = 0;
+            let totalWithdrawals = 0;
+            
+            allTransactions.forEach(transaction => {
+                if (transaction.type === 'deposit' || transaction.type === 'admin_deposit' || transaction.type === 'agent_deposit') {
+                    totalDeposits += transaction.amount;
+                } else if (transaction.type === 'withdrawal' || transaction.type === 'admin_deduction' || transaction.type === 'agent_withdrawal') {
+                    totalWithdrawals += transaction.amount;
+                }
+            });
+            
+            document.getElementById('totalDeposits').textContent = totalDeposits.toFixed(2);
+            document.getElementById('totalWithdrawals').textContent = totalWithdrawals.toFixed(2);
+            document.getElementById('companyProfit').textContent = companyProfit.toFixed(2);
+        }
+
+        // Load agent data
+        function loadAgentData() {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            
+            // Populate user dropdown
+            const userSelect = document.getElementById('agentUsername');
+            userSelect.innerHTML = '';
+            
+            // Only show the 5 fixed users
+            const fixedUsers = ['user1', 'user2', 'user3', 'user4', 'user5'];
+            fixedUsers.forEach(username => {
+                if (users[username]) {
+                    const option = document.createElement('option');
+                    option.value = username;
+                    option.textContent = username;
+                    userSelect.appendChild(option);
+                }
+            });
+        }
+
+        // Load pending requests
+        function loadPendingRequests() {
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const requestsContainer = document.getElementById('pendingRequests');
+            requestsContainer.innerHTML = '';
+            
+            if (pendingRequests.length === 0) {
+                requestsContainer.innerHTML = '<p>No pending requests</p>';
                 return;
             }
             
-            user.balance -= amount;
-            user.vipLevel = level;
-            
-            // Record transaction
-            recordTransaction(
-                currentUser,
-                'withdrawal',
-                amount,
-                `VIP ${level} package purchase`
-            );
-            
-            alert(`VIP ${level} package purchased successfully!`);
-            loadUserDashboard();
+            pendingRequests.forEach((request, index) => {
+                if (request.status === 'pending') {
+                    const requestItem = document.createElement('div');
+                    requestItem.className = 'request-item';
+                    requestItem.innerHTML = `
+                        <p><strong>User:</strong> ${request.username}</p>
+                        <p><strong>Type:</strong> ${request.type}</p>
+                        <p><strong>Amount:</strong> $${request.amount.toFixed(2)}</p>
+                        <p><strong>Date:</strong> ${request.date}</p>
+                        ${request.method ? `<p><strong>Method:</strong> ${request.method}</p>` : ''}
+                        ${request.wallet ? `<p><strong>Wallet:</strong> ${request.wallet}</p>` : ''}
+                        ${request.details ? `<p><strong>Details:</strong> ${request.details}</p>` : ''}
+                        <div class="request-actions">
+                            <button class="btn btn-success" onclick="approveRequest(${index})">Approve</button>
+                            <button class="btn btn-danger" onclick="rejectRequest(${index})">Reject</button>
+                        </div>
+                    `;
+                    requestsContainer.appendChild(requestItem);
+                }
+            });
         }
-        
-        // Request withdrawal
-        function requestWithdrawal() {
-            const amount = parseFloat(document.getElementById('withdraw-amount').value);
-            const wallet = document.getElementById('withdraw-wallet').value.trim();
-            const messageDiv = document.getElementById('withdraw-message');
+
+        // Login function
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
             
-            if (!amount || amount <= 0) {
-                messageDiv.textContent = "Please enter a valid amount";
-                messageDiv.className = "status-message status-error";
+            performLogin(username, password);
+        }
+
+        // Modal login function
+        function modalLogin() {
+            const username = document.getElementById('modalLoginUsername').value;
+            const password = document.getElementById('modalLoginPassword').value;
+            
+            performLogin(username, password);
+        }
+
+        // Perform login
+        function performLogin(username, password) {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = {
+                    username: username,
+                    role: users[username].role
+                };
+                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                
+                document.getElementById('loginError').style.display = 'none';
+                document.getElementById('modalLoginError').style.display = 'none';
+                hideModal('loginModal');
+                showMainContent();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('modalLoginError').style.display = 'block';
+            }
+        }
+
+        // Register function
+        function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            
+            performRegistration(username, password, role);
+        }
+
+        // Modal register function
+        function modalRegister() {
+            const username = document.getElementById('modalRegisterUsername').value;
+            const password = document.getElementById('modalRegisterPassword').value;
+            const role = document.getElementById('modalRegisterRole').value;
+            
+            performRegistration(username, password, role);
+        }
+
+        // Perform registration
+        function performRegistration(username, password, role) {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            
+            if (users[username]) {
+                document.getElementById('registerError').style.display = 'block';
+                document.getElementById('modalRegisterError').style.display = 'block';
+                document.getElementById('registerSuccess').style.display = 'none';
+                document.getElementById('modalRegisterSuccess').style.display = 'none';
+            } else {
+                users[username] = {
+                    password: password,
+                    balance: 0,
+                    role: role,
+                    vip: 'none',
+                    transactions: [],
+                    earnings: 0
+                };
+                
+                localStorage.setItem('cryptoUsers', JSON.stringify(users));
+                
+                document.getElementById('registerError').style.display = 'none';
+                document.getElementById('modalRegisterError').style.display = 'none';
+                document.getElementById('registerSuccess').style.display = 'block';
+                document.getElementById('modalRegisterSuccess').style.display = 'block';
+                
+                // Clear form
+                document.getElementById('registerUsername').value = '';
+                document.getElementById('registerPassword').value = '';
+                document.getElementById('modalRegisterUsername').value = '';
+                document.getElementById('modalRegisterPassword').value = '';
+                
+                // Hide register modal after 2 seconds
+                setTimeout(() => {
+                    hideModal('registerModal');
+                    document.getElementById('registerSuccess').style.display = 'none';
+                    document.getElementById('modalRegisterSuccess').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('loggedInUser');
+            currentUser = null;
+            showAuthButtons();
+        }
+
+        // Show modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        // Hide modal
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Process deposit request
+        function processDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            const method = document.getElementById('depositMethod').value;
+            
+            if (isNaN(amount)) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Amount must be greater than 0');
+                return;
+            }
+            
+            // Create deposit request
+            const request = {
+                username: currentUser.username,
+                type: 'deposit',
+                amount: amount,
+                method: method,
+                date: new Date().toLocaleString(),
+                status: 'pending',
+                details: `Deposit request via ${method}`
+            };
+            
+            // Add to pending requests
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            pendingRequests.push(request);
+            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
+            
+            // Add transaction to user history
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[currentUser.username];
+            
+            user.transactions.push({
+                date: request.date,
+                type: 'deposit_request',
+                amount: amount,
+                status: 'pending',
+                details: `Pending deposit via ${method}`
+            });
+            
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            hideModal('depositModal');
+            alert('Deposit request submitted successfully! An agent will process your request soon.');
+            
+            // Clear form
+            document.getElementById('depositAmount').value = '';
+            
+            // Update UI
+            updateDashboard();
+            loadTransactionHistory();
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Process withdrawal request
+        function processWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const method = document.getElementById('withdrawMethod').value;
+            const wallet = document.getElementById('withdrawWallet').value;
+            
+            if (isNaN(amount)) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Amount must be greater than 0');
                 return;
             }
             
             if (!wallet) {
-                messageDiv.textContent = "Please enter wallet address";
-                messageDiv.className = "status-message status-error";
+                alert('Please enter your wallet address');
                 return;
             }
             
-            const user = users[currentUser];
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[currentUser.username];
+            
             if (user.balance < amount) {
-                messageDiv.textContent = "Insufficient balance";
-                messageDiv.className = "status-message status-error";
+                alert('Insufficient balance');
                 return;
             }
             
-            // Record transaction
-            recordTransaction(
-                currentUser,
-                'withdrawal',
-                amount,
-                `Withdrawal request to ${wallet.substring(0, 6)}... (pending)`
-            );
-            
-            // Add to withdrawal requests
-            withdrawals.push({
-                id: Date.now(),
-                username: currentUser,
+            // Create withdrawal request
+            const request = {
+                username: currentUser.username,
+                type: 'withdrawal',
                 amount: amount,
+                method: method,
                 wallet: wallet,
+                date: new Date().toLocaleString(),
                 status: 'pending',
-                date: new Date().toISOString()
-            });
-            
-            saveAllData();
-            
-            messageDiv.textContent = "Withdrawal request submitted successfully!";
-            messageDiv.className = "status-message status-success";
-            
-            // Clear form
-            document.getElementById('withdraw-amount').value = '';
-            document.getElementById('withdraw-wallet').value = '';
-        }
-        
-        // Record transaction
-        function recordTransaction(username, type, amount, description) {
-            if (!transactions[username]) {
-                transactions[username] = [];
-            }
-            
-            const tx = {
-                date: new Date().toISOString(),
-                type: type,
-                amount: amount,
-                description: description
+                details: `Withdrawal request to ${wallet} via ${method}`
             };
             
-            transactions[username].push(tx);
-            saveAllData();
+            // Add to pending requests
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            pendingRequests.push(request);
+            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
             
-            // Update balance display if this is the current user
-            if (currentUser === username) {
-                document.getElementById('user-balance').textContent = users[username].balance.toFixed(2);
-                loadUserTransactions();
-            }
-        }
-        
-        // Agent search user
-        function agentSearchUser() {
-            const username = document.getElementById('agent-search-input').value.trim();
-            
-            if (!username) {
-                alert("Please enter a username");
-                return;
-            }
-            
-            if (!users[username]) {
-                alert("User not found");
-                document.getElementById('agent-user-details').style.display = 'none';
-                return;
-            }
-            
-            const user = users[username];
-            document.getElementById('agent-detail-username').textContent = username;
-            document.getElementById('agent-detail-balance').textContent = user.balance.toFixed(2);
-            document.getElementById('agent-user-details').style.display = 'block';
-        }
-        
-        // Agent deposit
-        function agentDeposit() {
-            const username = document.getElementById('agent-detail-username').textContent;
-            const amount = parseFloat(document.getElementById('agent-deposit-amount').value);
-            
-            if (!amount || amount <= 0) {
-                alert("Please enter a valid amount");
-                return;
-            }
-            
-            if (!users[username]) {
-                alert("User not found");
-                return;
-            }
-            
-            users[username].balance += amount;
-            
-            // Record transaction
-            recordTransaction(
-                username,
-                'deposit',
-                amount,
-                `Deposit by agent ${currentUser}`
-            );
-            
-            alert(`Successfully deposited $${amount.toFixed(2)} to ${username}'s account`);
-            document.getElementById('agent-detail-balance').textContent = users[username].balance.toFixed(2);
-            document.getElementById('agent-deposit-amount').value = '';
-        }
-        
-        // Agent withdraw
-        function agentWithdraw() {
-            const username = document.getElementById('agent-detail-username').textContent;
-            const amount = parseFloat(document.getElementById('agent-withdraw-amount').value);
-            
-            if (!amount || amount <= 0) {
-                alert("Please enter a valid amount");
-                return;
-            }
-            
-            if (!users[username]) {
-                alert("User not found");
-                return;
-            }
-            
-            if (users[username].balance < amount) {
-                alert("Insufficient balance");
-                return;
-            }
-            
-            users[username].balance -= amount;
-            
-            // Record transaction
-            recordTransaction(
-                username,
-                'withdrawal',
-                amount,
-                `Withdrawal by agent ${currentUser}`
-            );
-            
-            alert(`Successfully withdrew $${amount.toFixed(2)} from ${username}'s account`);
-            document.getElementById('agent-detail-balance').textContent = users[username].balance.toFixed(2);
-            document.getElementById('agent-withdraw-amount').value = '';
-        }
-        
-        // Load agent dashboard
-        function loadAgentDashboard() {
-            refreshWithdrawalRequests();
-        }
-        
-        // Refresh withdrawal requests
-        function refreshWithdrawalRequests() {
-            const tbody = document.getElementById('withdraw-requests-list');
-            tbody.innerHTML = '';
-            
-            if (withdrawals.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No withdrawal requests</td></tr>';
-                return;
-            }
-            
-            // Show newest first
-            withdrawals.slice().reverse().forEach(request => {
-                const tr = document.createElement('tr');
-                const statusClass = request.status === 'approved' ? 'status-approved' : 'status-pending';
-                
-                tr.innerHTML = `
-                    <td>${request.username}</td>
-                    <td>$${request.amount.toFixed(2)}</td>
-                    <td>${request.wallet.substring(0, 10)}...</td>
-                    <td class="${statusClass}">${request.status}</td>
-                    <td>
-                        ${request.status === 'pending' ? 
-                            `<button onclick="approveWithdrawal(${request.id})" style="padding:5px 10px; background:var(--success); border:none; border-radius:3px; color:white; cursor:pointer;">Approve</button>` : 
-                            'Approved'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
+            // Add transaction to user history
+            user.transactions.push({
+                date: request.date,
+                type: 'withdrawal_request',
+                amount: amount,
+                status: 'pending',
+                details: `Pending withdrawal to ${wallet} via ${method}`
             });
+            
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            hideModal('withdrawModal');
+            alert('Withdrawal request submitted successfully! An agent will process your request soon.');
+            
+            // Clear form
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawWallet').value = '';
+            
+            // Update UI
+            updateDashboard();
+            loadTransactionHistory();
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
         }
-        
-        // Approve withdrawal
-        function approveWithdrawal(id) {
-            const withdrawal = withdrawals.find(w => w.id === id);
+
+        // Approve request
+        function approveRequest(index) {
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const request = pendingRequests[index];
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[request.username];
             
-            if (!withdrawal) {
-                alert("Withdrawal not found");
-                return;
+            if (request.type === 'deposit') {
+                // Process deposit
+                user.balance += request.amount;
+                
+                // Add transaction
+                user.transactions.push({
+                    date: new Date().toLocaleString(),
+                    type: 'deposit',
+                    amount: request.amount,
+                    status: 'completed',
+                    details: `Deposit approved via ${request.method} by ${currentUser.username}`
+                });
+                
+                // Add to all transactions
+                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+                allTransactions.push({
+                    username: request.username,
+                    type: 'deposit',
+                    amount: request.amount,
+                    status: 'completed',
+                    date: new Date().toLocaleString(),
+                    details: `Deposit approved via ${request.method} by ${currentUser.username}`
+                });
+                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+            } 
+            else if (request.type === 'withdrawal') {
+                // Calculate company profit (2% fee)
+                const fee = request.amount * 0.02;
+                const netAmount = request.amount - fee;
+                let companyProfit = parseFloat(localStorage.getItem('companyProfit'));
+                companyProfit += fee;
+                localStorage.setItem('companyProfit', companyProfit.toString());
+                
+                // Process withdrawal
+                user.balance -= request.amount;
+                
+                // Add transaction
+                user.transactions.push({
+                    date: new Date().toLocaleString(),
+                    type: 'withdrawal',
+                    amount: netAmount,
+                    status: 'completed',
+                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+                });
+                
+                // Add to all transactions
+                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+                allTransactions.push({
+                    username: request.username,
+                    type: 'withdrawal',
+                    amount: netAmount,
+                    status: 'completed',
+                    date: new Date().toLocaleString(),
+                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+                });
+                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
             }
             
-            if (withdrawal.status !== 'pending') {
-                alert("Withdrawal already processed");
-                return;
+            // Update request status
+            request.status = 'approved';
+            pendingRequests[index] = request;
+            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
+            
+            // Update user data
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            // Update UI
+            if (currentUser.username === request.username) {
+                updateDashboard();
+                loadTransactionHistory();
             }
             
-            const user = users[withdrawal.username];
-            if (!user) {
-                alert("User account not found");
-                return;
+            if (currentUser.role === 'admin') {
+                loadAdminData();
             }
             
-            if (user.balance < withdrawal.amount) {
-                alert("User has insufficient balance");
-                return;
-            }
+            loadPendingRequests();
+            alert('Request approved successfully!');
             
-            // Deduct from user balance
-            user.balance -= withdrawal.amount;
-            withdrawal.status = 'approved';
-            
-            // Update transaction description
-            const userTransactions = transactions[withdrawal.username] || [];
-            const txIndex = userTransactions.findIndex(tx => 
-                tx.description.includes(withdrawal.wallet.substring(0, 6)) && 
-                tx.description.includes('pending')
-            );
-            
-            if (txIndex !== -1) {
-                userTransactions[txIndex].description = `Withdrawal to ${withdrawal.wallet.substring(0, 6)}... (approved)`;
-            }
-            
-            saveAllData();
-            alert(`Withdrawal of $${withdrawal.amount.toFixed(2)} approved`);
-            refreshWithdrawalRequests();
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
         }
-        
-        // Initialize on page load
-        window.onload = function() {
-            initializeData();
-            showAuthForm('login');
-        };
+
+        // Reject request
+        function rejectRequest(index) {
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const request = pendingRequests[index];
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[request.username];
+            
+            // Update request status
+            request.status = 'rejected';
+            pendingRequests[index] = request;
+            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
+            
+            // Add transaction to user history
+            user.transactions.push({
+                date: new Date().toLocaleString(),
+                type: request.type === 'deposit' ? 'deposit_request' : 'withdrawal_request',
+                amount: request.amount,
+                status: 'rejected',
+                details: `${request.details} (Rejected by ${currentUser.username})`
+            });
+            
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            // Update UI
+            if (currentUser.username === request.username) {
+                updateDashboard();
+                loadTransactionHistory();
+            }
+            
+            loadPendingRequests();
+            alert('Request rejected successfully!');
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Select VIP package
+        function selectPackage(packageType) {
+            const packageInfo = {
+                'silver': {
+                    name: 'Silver Package',
+                    price: 500,
+                    benefits: [
+                        '5% Daily Returns',
+                        'Basic Support',
+                        'Standard Trading Signals'
+                    ]
+                },
+                'gold': {
+                    name: 'Gold Package',
+                    price: 2000,
+                    benefits: [
+                        '8% Daily Returns',
+                        'Priority Support',
+                        'Advanced Trading Signals',
+                        'Weekly Analysis'
+                    ]
+                },
+                'platinum': {
+                    name: 'Platinum Package',
+                    price: 5000,
+                    benefits: [
+                        '12% Daily Returns',
+                        '24/7 VIP Support',
+                        'Premium Trading Signals',
+                        'Daily Analysis',
+                        'Personal Account Manager'
+                    ]
+                }
+            };
+            
+            const selected = packageInfo[packageType];
+            
+            document.getElementById('packageName').textContent = selected.name;
+            document.getElementById('packagePrice').textContent = `Price: $${selected.price}`;
+            
+            const benefitsList = document.getElementById('packageBenefits');
+            benefitsList.innerHTML = '';
+            selected.benefits.forEach(benefit => {
+                const li = document.createElement('li');
+                li.textContent = benefit;
+                li.style.marginBottom = '5px';
+                li.style.paddingLeft = '20px';
+                li.style.position = 'relative';
+                li.style.listStyleType = 'none';
+                li.style.color = 'rgba(255, 255, 255, 0.7)';
+                
+                const check = document.createElement('span');
+                check.textContent = '✓';
+                check.style.color = 'var(--success)';
+                check.style.position = 'absolute';
+                check.style.left = '0';
+                
+                li.prepend(check);
+                benefitsList.appendChild(li);
+            });
+            
+            document.getElementById('selectedPackageInfo').style.display = 'block';
+            document.getElementById('confirmUpgradeBtn').style.display = 'block';
+            
+            // Store selected package in button for confirmation
+            document.getElementById('confirmUpgradeBtn').dataset.package = packageType;
+        }
+
+        // Confirm VIP upgrade
+        function confirmUpgrade() {
+            const packageType = document.getElementById('confirmUpgradeBtn').dataset.package;
+            const packagePrices = {
+                'silver': 500,
+                'gold': 2000,
+                'platinum': 5000
+            };
+            
+            const price = packagePrices[packageType];
+            
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[currentUser.username];
+            
+            if (user.balance < price) {
+                alert('Insufficient balance for this package');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to upgrade to ${packageType} package for $${price}?`)) {
+                user.balance -= price;
+                user.vip = packageType;
+                
+                // Add company profit (20% of package price)
+                const companyProfit = parseFloat(localStorage.getItem('companyProfit'));
+                localStorage.setItem('companyProfit', (companyProfit + (price * 0.2)).toString());
+                
+                // Add transaction
+                const transaction = {
+                    date: new Date().toLocaleString(),
+                    type: 'vip_upgrade',
+                    amount: price,
+                    status: 'completed',
+                    details: `Upgraded to ${packageType} VIP package`
+                };
+                
+                user.transactions.push(transaction);
+                
+                // Add to all transactions
+                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+                allTransactions.push({
+                    username: currentUser.username,
+                    ...transaction
+                });
+                
+                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+                localStorage.setItem('cryptoUsers', JSON.stringify(users));
+                
+                updateDashboard();
+                loadTransactionHistory();
+                
+                if (currentUser.role === 'admin') {
+                    loadAdminData();
+                }
+                
+                hideModal('vipModal');
+                alert(`You have successfully upgraded to ${packageType} VIP package!`);
+                
+                // Trigger storage event to update other tabs/devices
+                triggerStorageUpdate();
+            }
+        }
+
+        // Admin add funds
+        function adminAddFunds() {
+            const username = document.getElementById('adminUsername').value;
+            const amount = parseFloat(document.getElementById('adminAmount').value);
+            
+            if (isNaN(amount)) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Amount must be greater than 0');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[username];
+            
+            user.balance += amount;
+            
+            // Add transaction
+            const transaction = {
+                date: new Date().toLocaleString(),
+                type: 'admin_deposit',
+                amount: amount,
+                status: 'completed',
+                details: `Admin added funds`
+            };
+            
+            user.transactions.push(transaction);
+            
+            // Add to all transactions
+            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+            allTransactions.push({
+                username: username,
+                ...transaction
+            });
+            
+            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            if (currentUser.username === username) {
+                updateDashboard();
+                loadTransactionHistory();
+            }
+            
+            loadAdminData();
+            alert(`Successfully added $${amount} to ${username}'s account`);
+            
+            // Clear amount field
+            document.getElementById('adminAmount').value = '';
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Admin deduct funds
+        function adminDeductFunds() {
+            const username = document.getElementById('adminUsername').value;
+            const amount = parseFloat(document.getElementById('adminAmount').value);
+            
+            if (isNaN(amount)) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Amount must be greater than 0');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[username];
+            
+            if (user.balance < amount) {
+                alert('User has insufficient balance');
+                return;
+            }
+            
+            user.balance -= amount;
+            
+            // Add company profit (10% of deduction)
+            const companyProfit = parseFloat(localStorage.getItem('companyProfit'));
+            localStorage.setItem('companyProfit', (companyProfit + (amount * 0.1)).toString());
+            
+            // Add transaction
+            const transaction = {
+                date: new Date().toLocaleString(),
+                type: 'admin_deduction',
+                amount: amount,
+                status: 'completed',
+                details: `Admin deducted funds`
+            };
+            
+            user.transactions.push(transaction);
+            
+            // Add to all transactions
+            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+            allTransactions.push({
+                username: username,
+                ...transaction
+            });
+            
+            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            if (currentUser.username === username) {
+                updateDashboard();
+                loadTransactionHistory();
+            }
+            
+            loadAdminData();
+            alert(`Successfully deducted $${amount} from ${username}'s account`);
+            
+            // Clear amount field
+            document.getElementById('adminAmount').value = '';
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Agent deposit for user
+        function agentDeposit() {
+            const username = document.getElementById('agentUsername').value;
+            const amount = parseFloat(document.getElementById('agentAmount').value);
+            
+            if (isNaN(amount)) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Amount must be greater than 0');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[username];
+            
+            user.balance += amount;
+            
+            // Add transaction
+            const transaction = {
+                date: new Date().toLocaleString(),
+                type: 'agent_deposit',
+                amount: amount,
+                status: 'completed',
+                details: `Deposit processed by agent ${currentUser.username}`
+            };
+            
+            user.transactions.push(transaction);
+            
+            // Add to all transactions
+            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+            allTransactions.push({
+                username: username,
+                ...transaction
+            });
+            
+            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            if (currentUser.username === username) {
+                updateDashboard();
+                loadTransactionHistory();
+            }
+            
+            showSyncNotification();
+            alert(`Successfully deposited $${amount} to ${username}'s account`);
+            
+            // Clear amount field
+            document.getElementById('agentAmount').value = '';
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Agent withdraw for user
+        function agentWithdraw() {
+            const username = document.getElementById('agentUsername').value;
+            const amount = parseFloat(document.getElementById('agentAmount').value);
+            
+            if (isNaN(amount)) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Amount must be greater than 0');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[username];
+            
+            if (user.balance < amount) {
+                alert('User has insufficient balance');
+                return;
+            }
+            
+            // Calculate company profit (2% fee)
+            const fee = amount * 0.02;
+            const netAmount = amount - fee;
+            let companyProfit = parseFloat(localStorage.getItem('companyProfit'));
+            companyProfit += fee;
+            localStorage.setItem('companyProfit', companyProfit.toString());
+            
+            user.balance -= amount;
+            
+            // Add transaction
+            const transaction = {
+                date: new Date().toLocaleString(),
+                type: 'agent_withdrawal',
+                amount: netAmount,
+                status: 'completed',
+                details: `Withdrawal processed by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+            };
+            
+            user.transactions.push(transaction);
+            
+            // Add to all transactions
+            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+            allTransactions.push({
+                username: username,
+                ...transaction
+            });
+            
+            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            if (currentUser.username === username) {
+                updateDashboard();
+                loadTransactionHistory();
+            }
+            
+            showSyncNotification();
+            alert(`Successfully withdrew $${netAmount.toFixed(2)} from ${username}'s account (Fee: $${fee.toFixed(2)})`);
+            
+            // Clear amount field
+            document.getElementById('agentAmount').value = '';
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Show sync notification
+        function showSyncNotification() {
+            const notification = document.getElementById('syncNotification');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Simulate data sync between devices
+        function syncData() {
+            // In a real app, this would sync with a backend
+            // For demo purposes, we'll just show a notification
+            if (currentUser && (currentUser.role === 'agent' || currentUser.role === 'admin')) {
+                showSyncNotification();
+            }
+        }
+
+        // Calculate daily earnings for VIP members
+        function calculateDailyEarnings() {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            let updated = false;
+            
+            Object.keys(users).forEach(username => {
+                const user = users[username];
+                if (user.vip !== 'none') {
+                    let rate = 0;
+                    if (user.vip === 'silver') rate = 0.05;
+                    if (user.vip === 'gold') rate = 0.08;
+                    if (user.vip === 'platinum') rate = 0.12;
+                    
+                    const earnings = user.balance * rate;
+                    user.earnings += earnings;
+                    
+                    // Add transaction
+                    const transaction = {
+                        date: new Date().toLocaleString(),
+                        type: 'earning',
+                        amount: earnings,
+                        status: 'completed',
+                        details: `Daily earnings from VIP ${user.vip} package`
+                    };
+                    
+                    user.transactions.push(transaction);
+                    
+                    // Add to all transactions
+                    const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+                    allTransactions.push({
+                        username: username,
+                        ...transaction
+                    });
+                    
+                    localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+                    updated = true;
+                }
+            });
+            
+            if (updated) {
+                localStorage.setItem('cryptoUsers', JSON.stringify(users));
+                if (currentUser) {
+                    updateDashboard();
+                    loadTransactionHistory();
+                }
+                
+                // Trigger storage event to update other tabs/devices
+                triggerStorageUpdate();
+            }
+        }
+
+        // Trigger storage update event
+        function triggerStorageUpdate() {
+            // This will trigger the storage event listener in other tabs/devices
+            localStorage.setItem('lastUpdate', Date.now().toString());
+        }
+
+        // Run daily earnings calculation every 24 hours (for demo, we'll do it every minute)
+        setInterval(calculateDailyEarnings, 60000);
     </script>
 </body>
 </html>
