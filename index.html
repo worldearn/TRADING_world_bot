@@ -320,6 +320,22 @@
         .status-approved {
             color: var(--success);
         }
+        .text-success {
+            color: var(--success);
+        }
+        .text-danger {
+            color: var(--danger);
+        }
+        .transaction-history {
+            margin-top: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .transaction-history h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -414,6 +430,25 @@
                     <button class="btn btn-primary" style="margin-top: 30px; width: 100%;" onclick="window.open('https://t.me/CostumereCare_Bot', '_blank')">
                         <i class="fas fa-robot"></i> Deposit via Telegram Bot
                     </button>
+                </div>
+
+                <!-- Transaction History Section -->
+                <div class="transaction-history">
+                    <h3>Transaction History</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th>From Device</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-transactions">
+                            <!-- Transactions will load here -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
@@ -593,7 +628,9 @@
         // Database
         let users = JSON.parse(localStorage.getItem('btc_trade_pro_users')) || {};
         let withdrawals = JSON.parse(localStorage.getItem('btc_trade_pro_withdrawals')) || [];
+        let transactions = JSON.parse(localStorage.getItem('btc_trade_pro_transactions')) || {};
         let currentUser = null;
+        let refreshInterval;
         
         // Fixed agents
         const agents = {
@@ -617,16 +654,77 @@
             for (const [username, userData] of Object.entries(fixedUsers)) {
                 if (!users[username]) {
                     users[username] = { ...userData };
+                    // Initialize empty transaction array for new users
+                    if (!transactions[username]) {
+                        transactions[username] = [];
+                    }
                     updated = true;
                 }
             }
             if (updated) {
                 localStorage.setItem('btc_trade_pro_users', JSON.stringify(users));
+                localStorage.setItem('btc_trade_pro_transactions', JSON.stringify(transactions));
             }
         }
         
         // Initialize on page load
         initializeFixedUsers();
+        
+        // Record all financial transactions
+        function recordTransaction(username, type, amount, description) {
+            if (!transactions[username]) {
+                transactions[username] = [];
+            }
+            
+            const tx = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                type: type,
+                amount: amount,
+                description: description,
+                device: navigator.userAgent.substring(0, 30) // Track which device created it
+            };
+            
+            transactions[username].push(tx);
+            localStorage.setItem('btc_trade_pro_transactions', JSON.stringify(transactions));
+            
+            // If the affected user is currently logged in, refresh their view
+            if (currentUser === username) {
+                loadUserTransactions();
+                loadUserDashboard();
+            }
+            
+            return tx;
+        }
+
+        // Load transactions for the current user
+        function loadUserTransactions() {
+            const userTransactions = transactions[currentUser] || [];
+            const tbody = document.getElementById('user-transactions');
+            tbody.innerHTML = '';
+            
+            if (userTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No transactions found</td></tr>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            userTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            userTransactions.forEach(tx => {
+                const tr = document.createElement('tr');
+                const typeClass = tx.type === 'deposit' ? 'text-success' : 'text-danger';
+                
+                tr.innerHTML = `
+                    <td>${new Date(tx.date).toLocaleString()}</td>
+                    <td class="${typeClass}">${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</td>
+                    <td>$${tx.amount.toFixed(2)}</td>
+                    <td>${tx.description}</td>
+                    <td>${tx.device || 'Unknown device'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
         
         // Authentication functions
         function showAuthForm(formType) {
@@ -651,6 +749,7 @@
                 currentUser = username;
                 showDashboard('agent');
                 loadAgentDashboard();
+                startAutoRefresh();
                 return;
             }
             
@@ -659,6 +758,7 @@
                 currentUser = username;
                 showDashboard('user');
                 loadUserDashboard();
+                startAutoRefresh();
                 return;
             }
             
@@ -692,15 +792,50 @@
                 dailyEarnings: 0
             };
             
+            // Initialize transactions for new user
+            transactions[username] = [];
+            
             localStorage.setItem('btc_trade_pro_users', JSON.stringify(users));
+            localStorage.setItem('btc_trade_pro_transactions', JSON.stringify(transactions));
+            
             alert('Account created successfully! Please login.');
             showAuthForm('login');
         }
         
         function logout() {
+            clearInterval(refreshInterval);
             currentUser = null;
             document.querySelector('.dashboard').style.display = 'none';
             document.querySelector('.auth-container').style.display = 'flex';
+        }
+        
+        // Auto-refresh functions
+        function startAutoRefresh() {
+            clearInterval(refreshInterval); // Clear any existing interval
+            refreshInterval = setInterval(() => {
+                refreshData();
+            }, 30000); // Check every 30 seconds
+            
+            // Initial refresh
+            refreshData();
+        }
+        
+        function refreshData() {
+            // Reload data from localStorage
+            const newUsers = JSON.parse(localStorage.getItem('btc_trade_pro_users')) || {};
+            const newTransactions = JSON.parse(localStorage.getItem('btc_trade_pro_transactions')) || {};
+            
+            // Update only if current user exists in the new data
+            if (currentUser && (newUsers[currentUser] || newTransactions[currentUser])) {
+                users = newUsers;
+                transactions = newTransactions;
+                
+                if (agents[currentUser]) {
+                    loadAgentDashboard();
+                } else {
+                    loadUserDashboard();
+                }
+            }
         }
         
         // Dashboard functions
@@ -726,6 +861,9 @@
             
             // For demo purposes, set total profit to 1.5x of balance
             document.getElementById('total-profit').textContent = (user.balance * 1.5).toFixed(2);
+            
+            // Load transaction history
+            loadUserTransactions();
         }
         
         function loadAgentDashboard() {
@@ -757,6 +895,14 @@
             users[currentUser] = user;
             localStorage.setItem('btc_trade_pro_users', JSON.stringify(users));
             
+            // Record the transaction
+            recordTransaction(
+                currentUser,
+                'withdrawal',
+                amount,
+                `VIP ${level} package purchase`
+            );
+            
             alert(`VIP ${level} package purchased successfully!`);
             loadUserDashboard();
         }
@@ -784,6 +930,14 @@
                 document.getElementById('withdraw-message').style.color = 'var(--danger)';
                 return;
             }
+            
+            // Record transaction immediately (will show as pending)
+            recordTransaction(
+                currentUser,
+                'withdrawal',
+                amount,
+                `Withdrawal request to ${wallet.substring(0, 6)}... (pending)`
+            );
             
             // Add withdrawal request
             withdrawals.push({
@@ -850,14 +1004,17 @@
             users[username].balance += amount;
             localStorage.setItem('btc_trade_pro_users', JSON.stringify(users));
             
+            // Record the transaction with agent info
+            recordTransaction(
+                username, 
+                'deposit', 
+                amount, 
+                `Deposit by agent ${currentUser}`
+            );
+            
             alert(`Successfully deposited $${amount.toFixed(2)} to ${username}'s account`);
             document.getElementById('agent-detail-balance').textContent = users[username].balance.toFixed(2);
             document.getElementById('agent-deposit-amount').value = '';
-            
-            // If the user is viewing their own dashboard, refresh it
-            if (currentUser === username) {
-                loadUserDashboard();
-            }
         }
         
         function agentWithdraw() {
@@ -882,14 +1039,17 @@
             users[username].balance -= amount;
             localStorage.setItem('btc_trade_pro_users', JSON.stringify(users));
             
+            // Record the transaction
+            recordTransaction(
+                username,
+                'withdrawal',
+                amount,
+                `Withdrawal by agent ${currentUser}`
+            );
+            
             alert(`Successfully withdrew $${amount.toFixed(2)} from ${username}'s account`);
             document.getElementById('agent-detail-balance').textContent = users[username].balance.toFixed(2);
             document.getElementById('agent-withdraw-amount').value = '';
-            
-            // If the user is viewing their own dashboard, refresh it
-            if (currentUser === username) {
-                loadUserDashboard();
-            }
         }
         
         function refreshWithdrawalRequests() {
@@ -949,6 +1109,20 @@
             // Deduct from user balance
             user.balance -= withdrawal.amount;
             withdrawal.status = 'approved';
+            
+            // Update transaction record
+            const userTransactions = transactions[withdrawal.username] || [];
+            const txIndex = userTransactions.findIndex(tx => 
+                tx.type === 'withdrawal' && 
+                tx.description.includes(withdrawal.wallet.substring(0, 6)) &&
+                tx.description.includes('pending')
+            );
+            
+            if (txIndex !== -1) {
+                userTransactions[txIndex].description = `Withdrawal to ${withdrawal.wallet.substring(0, 6)}... (approved)`;
+                transactions[withdrawal.username] = userTransactions;
+                localStorage.setItem('btc_trade_pro_transactions', JSON.stringify(transactions));
+            }
             
             // Save updates
             localStorage.setItem('btc_trade_pro_users', JSON.stringify(users));
