@@ -484,6 +484,40 @@
             margin-top: 8px;
         }
 
+        /* Admin panel specific styles */
+        .user-list {
+            margin-top: 15px;
+        }
+        
+        .user-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .user-card h4 {
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+        
+        .user-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .user-vip {
+            font-weight: bold;
+            color: var(--warning);
+        }
+        
+        .user-balance {
+            font-weight: bold;
+            color: var(--success);
+        }
+
         @media (min-width: 768px) {
             .dashboard {
                 grid-template-columns: repeat(2, 1fr);
@@ -552,6 +586,7 @@
                 <select id="registerRole">
                     <option value="user">User</option>
                     <option value="agent">Agent</option>
+                    <option value="admin">Admin</option>
                 </select>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="register()">Register</button>
@@ -678,6 +713,20 @@
                             <p>Total Deposits: $<span id="totalDeposits">0</span></p>
                             <p>Total Withdrawals: $<span id="totalWithdrawals">0</span></p>
                             <p>Company Profit: $<span id="companyProfit">0</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="card user-list">
+                        <h3>All Users</h3>
+                        <div id="allUsersList">
+                            <!-- Users will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Pending Requests</h3>
+                        <div id="adminPendingRequests">
+                            <!-- Requests will be added here -->
                         </div>
                     </div>
                 </div>
@@ -853,6 +902,7 @@
                     <select id="modalRegisterRole">
                         <option value="user">User</option>
                         <option value="agent">Agent</option>
+                        <option value="admin">Admin</option>
                     </select>
                 </div>
                 <div class="modal-footer">
@@ -873,7 +923,7 @@
         // Initialize data structure if not exists
         if (!localStorage.getItem('cryptoUsers')) {
             const initialUsers = {
-                'admin1': { 
+                'admin': { 
                     password: 'admin123', 
                     balance: 0, 
                     role: 'admin', 
@@ -882,7 +932,7 @@
                     earnings: 0
                 },
                 'user1': { 
-                    password: 'pass1', 
+                    password: 'user1', 
                     balance: 0, 
                     role: 'user', 
                     vip: 'none', 
@@ -890,39 +940,15 @@
                     earnings: 0
                 },
                 'user2': { 
-                    password: 'pass2', 
+                    password: 'user2', 
                     balance: 0, 
                     role: 'user', 
                     vip: 'none', 
                     transactions: [],
                     earnings: 0
                 },
-                'user3': { 
-                    password: 'pass3', 
-                    balance: 0, 
-                    role: 'user', 
-                    vip: 'none', 
-                    transactions: [],
-                    earnings: 0
-                },
-                'user4': { 
-                    password: 'pass4', 
-                    balance: 0, 
-                    role: 'user', 
-                    vip: 'none', 
-                    transactions: [],
-                    earnings: 0
-                },
-                'user5': { 
-                    password: 'pass5', 
-                    balance: 0, 
-                    role: 'user', 
-                    vip: 'none', 
-                    transactions: [],
-                    earnings: 0
-                },
-                'Gyenendra01': { 
-                    password: 'bake', 
+                'agent1': { 
+                    password: 'agent1', 
                     balance: 0, 
                     role: 'agent', 
                     vip: 'none', 
@@ -948,7 +974,6 @@
         // Global variables
         let currentUser = null;
         let syncInterval = null;
-        let dataUpdateListeners = [];
 
         // DOM Content Loaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -1015,7 +1040,6 @@
                 document.getElementById('adminPanel').style.display = 'block';
                 loadAdminData();
                 document.getElementById('requestsTabBtn').style.display = 'block';
-                loadPendingRequests();
             } else {
                 document.getElementById('adminPanel').style.display = 'none';
             }
@@ -1130,6 +1154,82 @@
             document.getElementById('totalDeposits').textContent = totalDeposits.toFixed(2);
             document.getElementById('totalWithdrawals').textContent = totalWithdrawals.toFixed(2);
             document.getElementById('companyProfit').textContent = companyProfit.toFixed(2);
+            
+            // Load all users list
+            loadAllUsersList();
+            
+            // Load admin pending requests
+            loadAdminPendingRequests();
+        }
+
+        // Load all users list for admin
+        function loadAllUsersList() {
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const usersList = document.getElementById('allUsersList');
+            usersList.innerHTML = '';
+            
+            Object.keys(users).forEach(username => {
+                if (users[username].role !== 'admin') {
+                    const user = users[username];
+                    const userCard = document.createElement('div');
+                    userCard.className = 'user-card';
+                    
+                    let vipStatus = 'Basic';
+                    if (user.vip === 'silver') vipStatus = 'Silver';
+                    if (user.vip === 'gold') vipStatus = 'Gold';
+                    if (user.vip === 'platinum') vipStatus = 'Platinum';
+                    
+                    userCard.innerHTML = `
+                        <h4>${username}</h4>
+                        <div class="user-details">
+                            <span>VIP Status:</span>
+                            <span class="user-vip">${vipStatus}</span>
+                        </div>
+                        <div class="user-details">
+                            <span>Balance:</span>
+                            <span class="user-balance">$${user.balance.toFixed(2)}</span>
+                        </div>
+                        <div class="user-details">
+                            <span>Total Earnings:</span>
+                            <span>$${user.earnings.toFixed(2)}</span>
+                        </div>
+                    `;
+                    usersList.appendChild(userCard);
+                }
+            });
+        }
+
+        // Load admin pending requests
+        function loadAdminPendingRequests() {
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const requestsContainer = document.getElementById('adminPendingRequests');
+            requestsContainer.innerHTML = '';
+            
+            if (pendingRequests.length === 0) {
+                requestsContainer.innerHTML = '<p>No pending requests</p>';
+                return;
+            }
+            
+            pendingRequests.forEach((request, index) => {
+                if (request.status === 'pending') {
+                    const requestItem = document.createElement('div');
+                    requestItem.className = 'request-item';
+                    requestItem.innerHTML = `
+                        <p><strong>User:</strong> ${request.username}</p>
+                        <p><strong>Type:</strong> ${request.type}</p>
+                        <p><strong>Amount:</strong> $${request.amount.toFixed(2)}</p>
+                        <p><strong>Date:</strong> ${request.date}</p>
+                        ${request.method ? `<p><strong>Method:</strong> ${request.method}</p>` : ''}
+                        ${request.wallet ? `<p><strong>Wallet:</strong> ${request.wallet}</p>` : ''}
+                        ${request.details ? `<p><strong>Details:</strong> ${request.details}</p>` : ''}
+                        <div class="request-actions">
+                            <button class="btn btn-success" onclick="adminApproveRequest(${index})">Approve</button>
+                            <button class="btn btn-danger" onclick="adminRejectRequest(${index})">Reject</button>
+                        </div>
+                    `;
+                    requestsContainer.appendChild(requestItem);
+                }
+            });
         }
 
         // Load agent data
@@ -1140,10 +1240,9 @@
             const userSelect = document.getElementById('agentUsername');
             userSelect.innerHTML = '';
             
-            // Only show the 5 fixed users
-            const fixedUsers = ['user1', 'user2', 'user3', 'user4', 'user5'];
-            fixedUsers.forEach(username => {
-                if (users[username]) {
+            // Only show regular users (not admins or other agents)
+            Object.keys(users).forEach(username => {
+                if (users[username].role === 'user') {
                     const option = document.createElement('option');
                     option.value = username;
                     option.textContent = username;
@@ -1344,7 +1443,7 @@
             localStorage.setItem('cryptoUsers', JSON.stringify(users));
             
             hideModal('depositModal');
-            alert('Deposit request submitted successfully! An agent will process your request soon.');
+            alert('Deposit request submitted successfully! An admin/agent will process your request soon.');
             
             // Clear form
             document.getElementById('depositAmount').value = '';
@@ -1415,7 +1514,7 @@
             localStorage.setItem('cryptoUsers', JSON.stringify(users));
             
             hideModal('withdrawModal');
-            alert('Withdrawal request submitted successfully! An agent will process your request soon.');
+            alert('Withdrawal request submitted successfully! An admin/agent will process your request soon.');
             
             // Clear form
             document.getElementById('withdrawAmount').value = '';
@@ -1429,8 +1528,8 @@
             triggerStorageUpdate();
         }
 
-        // Approve request
-        function approveRequest(index) {
+        // Admin approve request
+        function adminApproveRequest(index) {
             const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
             const request = pendingRequests[index];
             const users = JSON.parse(localStorage.getItem('cryptoUsers'));
@@ -1446,7 +1545,7 @@
                     type: 'deposit',
                     amount: request.amount,
                     status: 'completed',
-                    details: `Deposit approved via ${request.method} by ${currentUser.username}`
+                    details: `Deposit approved via ${request.method} by admin`
                 });
                 
                 // Add to all transactions
@@ -1457,7 +1556,7 @@
                     amount: request.amount,
                     status: 'completed',
                     date: new Date().toLocaleString(),
-                    details: `Deposit approved via ${request.method} by ${currentUser.username}`
+                    details: `Deposit approved via ${request.method} by admin`
                 });
                 localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
             } 
@@ -1478,7 +1577,7 @@
                     type: 'withdrawal',
                     amount: netAmount,
                     status: 'completed',
-                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by admin (Fee: $${fee.toFixed(2)})`
                 });
                 
                 // Add to all transactions
@@ -1489,7 +1588,119 @@
                     amount: netAmount,
                     status: 'completed',
                     date: new Date().toLocaleString(),
-                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by admin (Fee: $${fee.toFixed(2)})`
+                });
+                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+            }
+            
+            // Update request status
+            request.status = 'approved';
+            pendingRequests[index] = request;
+            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
+            
+            // Update user data
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            // Update UI
+            loadAdminData();
+            alert('Request approved successfully!');
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Admin reject request
+        function adminRejectRequest(index) {
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const request = pendingRequests[index];
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[request.username];
+            
+            // Update request status
+            request.status = 'rejected';
+            pendingRequests[index] = request;
+            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
+            
+            // Add transaction to user history
+            user.transactions.push({
+                date: new Date().toLocaleString(),
+                type: request.type === 'deposit' ? 'deposit_request' : 'withdrawal_request',
+                amount: request.amount,
+                status: 'rejected',
+                details: `${request.details} (Rejected by admin)`
+            });
+            
+            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            
+            // Update UI
+            loadAdminData();
+            alert('Request rejected successfully!');
+            
+            // Trigger storage event to update other tabs/devices
+            triggerStorageUpdate();
+        }
+
+        // Agent approve request
+        function approveRequest(index) {
+            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
+            const request = pendingRequests[index];
+            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const user = users[request.username];
+            
+            if (request.type === 'deposit') {
+                // Process deposit
+                user.balance += request.amount;
+                
+                // Add transaction
+                user.transactions.push({
+                    date: new Date().toLocaleString(),
+                    type: 'deposit',
+                    amount: request.amount,
+                    status: 'completed',
+                    details: `Deposit approved via ${request.method} by agent ${currentUser.username}`
+                });
+                
+                // Add to all transactions
+                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+                allTransactions.push({
+                    username: request.username,
+                    type: 'deposit',
+                    amount: request.amount,
+                    status: 'completed',
+                    date: new Date().toLocaleString(),
+                    details: `Deposit approved via ${request.method} by agent ${currentUser.username}`
+                });
+                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
+            } 
+            else if (request.type === 'withdrawal') {
+                // Calculate company profit (2% fee)
+                const fee = request.amount * 0.02;
+                const netAmount = request.amount - fee;
+                let companyProfit = parseFloat(localStorage.getItem('companyProfit'));
+                companyProfit += fee;
+                localStorage.setItem('companyProfit', companyProfit.toString());
+                
+                // Process withdrawal
+                user.balance -= request.amount;
+                
+                // Add transaction
+                user.transactions.push({
+                    date: new Date().toLocaleString(),
+                    type: 'withdrawal',
+                    amount: netAmount,
+                    status: 'completed',
+                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+                });
+                
+                // Add to all transactions
+                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
+                allTransactions.push({
+                    username: request.username,
+                    type: 'withdrawal',
+                    amount: netAmount,
+                    status: 'completed',
+                    date: new Date().toLocaleString(),
+                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
                 });
                 localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
             }
@@ -1508,10 +1719,6 @@
                 loadTransactionHistory();
             }
             
-            if (currentUser.role === 'admin') {
-                loadAdminData();
-            }
-            
             loadPendingRequests();
             alert('Request approved successfully!');
             
@@ -1519,7 +1726,7 @@
             triggerStorageUpdate();
         }
 
-        // Reject request
+        // Agent reject request
         function rejectRequest(index) {
             const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
             const request = pendingRequests[index];
@@ -1537,7 +1744,7 @@
                 type: request.type === 'deposit' ? 'deposit_request' : 'withdrawal_request',
                 amount: request.amount,
                 status: 'rejected',
-                details: `${request.details} (Rejected by ${currentUser.username})`
+                details: `${request.details} (Rejected by agent ${currentUser.username})`
             });
             
             localStorage.setItem('cryptoUsers', JSON.stringify(users));
