@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WORLD_TRADING_BOT</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    
     <style>
         :root {
             --primary: #6c5ce7;
@@ -484,40 +490,6 @@
             margin-top: 8px;
         }
 
-        /* Admin panel specific styles */
-        .user-list {
-            margin-top: 15px;
-        }
-        
-        .user-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .user-card h4 {
-            margin-bottom: 8px;
-            color: var(--secondary);
-        }
-        
-        .user-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-        
-        .user-vip {
-            font-weight: bold;
-            color: var(--warning);
-        }
-        
-        .user-balance {
-            font-weight: bold;
-            color: var(--success);
-        }
-
         @media (min-width: 768px) {
             .dashboard {
                 grid-template-columns: repeat(2, 1fr);
@@ -586,7 +558,6 @@
                 <select id="registerRole">
                     <option value="user">User</option>
                     <option value="agent">Agent</option>
-                    <option value="admin">Admin</option>
                 </select>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="register()">Register</button>
@@ -713,20 +684,6 @@
                             <p>Total Deposits: $<span id="totalDeposits">0</span></p>
                             <p>Total Withdrawals: $<span id="totalWithdrawals">0</span></p>
                             <p>Company Profit: $<span id="companyProfit">0</span></p>
-                        </div>
-                    </div>
-                    
-                    <div class="card user-list">
-                        <h3>All Users</h3>
-                        <div id="allUsersList">
-                            <!-- Users will be populated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Pending Requests</h3>
-                        <div id="adminPendingRequests">
-                            <!-- Requests will be added here -->
                         </div>
                     </div>
                 </div>
@@ -902,7 +859,6 @@
                     <select id="modalRegisterRole">
                         <option value="user">User</option>
                         <option value="agent">Agent</option>
-                        <option value="admin">Admin</option>
                     </select>
                 </div>
                 <div class="modal-footer">
@@ -920,56 +876,26 @@
     </div>
 
     <script>
-        // Initialize data structure if not exists
-        if (!localStorage.getItem('cryptoUsers')) {
-            const initialUsers = {
-                'admin': { 
-                    password: 'admin123', 
-                    balance: 0, 
-                    role: 'admin', 
-                    vip: 'none', 
-                    transactions: [],
-                    earnings: 0
-                },
-                'user1': { 
-                    password: 'user1', 
-                    balance: 0, 
-                    role: 'user', 
-                    vip: 'none', 
-                    transactions: [],
-                    earnings: 0
-                },
-                'user2': { 
-                    password: 'user2', 
-                    balance: 0, 
-                    role: 'user', 
-                    vip: 'none', 
-                    transactions: [],
-                    earnings: 0
-                },
-                'agent1': { 
-                    password: 'agent1', 
-                    balance: 0, 
-                    role: 'agent', 
-                    vip: 'none', 
-                    transactions: [],
-                    earnings: 0
-                }
-            };
-            localStorage.setItem('cryptoUsers', JSON.stringify(initialUsers));
-        }
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC0YuwaP8ARYBOX1e11U_aZhhkxc9kCts",
+            authDomain: "world-earn-websaid-2e257.firebaseapp.com",
+            projectId: "world-earn-websaid-2e257",
+            storageBucket: "world-earn-websaid-2e257.appspot.com",
+            messagingSenderId: "45722837786",
+            appId: "1:45722837786:web:a8e817aa88e6e518ce82a3"
+        };
 
-        if (!localStorage.getItem('allTransactions')) {
-            localStorage.setItem('allTransactions', JSON.stringify([]));
-        }
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        if (!localStorage.getItem('companyProfit')) {
-            localStorage.setItem('companyProfit', '0');
-        }
-
-        if (!localStorage.getItem('pendingRequests')) {
-            localStorage.setItem('pendingRequests', JSON.stringify([]));
-        }
+        // Initialize collections
+        const usersCollection = db.collection("users");
+        const transactionsCollection = db.collection("transactions");
+        const requestsCollection = db.collection("requests");
+        const systemCollection = db.collection("system");
 
         // Global variables
         let currentUser = null;
@@ -982,37 +908,30 @@
             // For demo purposes, simulate data sync every 5 seconds
             syncInterval = setInterval(syncData, 5000);
             
-            // Listen for storage events to handle real-time updates across tabs/devices
-            window.addEventListener('storage', function(event) {
-                if (event.key === 'cryptoUsers' || event.key === 'allTransactions' || 
-                    event.key === 'companyProfit' || event.key === 'pendingRequests') {
-                    // Update UI when data changes in another tab/device
-                    if (currentUser) {
-                        updateDashboard();
-                        loadTransactionHistory();
-                        
-                        if (currentUser.role === 'admin') {
-                            loadAdminData();
-                        }
-                        
-                        if (currentUser.role === 'agent') {
-                            loadAgentData();
-                            loadPendingRequests();
-                        }
-                    }
-                }
-            });
+            // Initialize data (run this only once)
+            // initializeData();
         });
 
         // Check if user is logged in
         function checkLoginStatus() {
-            const loggedInUser = localStorage.getItem('loggedInUser');
-            if (loggedInUser) {
-                currentUser = JSON.parse(loggedInUser);
-                showMainContent();
-            } else {
-                showAuthButtons();
-            }
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    const username = user.email.split('@')[0];
+                    usersCollection.doc(username).get()
+                        .then((doc) => {
+                            if (doc.exists) {
+                                currentUser = {
+                                    username: username,
+                                    role: doc.data().role,
+                                    uid: user.uid
+                                };
+                                showMainContent();
+                            }
+                        });
+                } else {
+                    showAuthButtons();
+                }
+            });
         }
 
         // Show authentication buttons
@@ -1053,6 +972,26 @@
                 document.getElementById('agentSection').style.display = 'none';
                 document.getElementById('requestsTabBtn').style.display = 'none';
             }
+            
+            // Setup real-time listener
+            setupRealtimeUpdates();
+        }
+
+        // Setup real-time updates
+        function setupRealtimeUpdates() {
+            usersCollection.doc(currentUser.username).onSnapshot((doc) => {
+                if (doc.exists) {
+                    updateDashboard();
+                    loadTransactionHistory();
+                }
+            });
+            
+            if (currentUser.role === 'admin' || currentUser.role === 'agent') {
+                requestsCollection.where("status", "==", "pending")
+                    .onSnapshot((querySnapshot) => {
+                        loadPendingRequests();
+                    });
+            }
         }
 
         // Switch between tabs
@@ -1075,213 +1014,155 @@
 
         // Update dashboard
         function updateDashboard() {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[currentUser.username];
-            
-            // Update balance
-            document.getElementById('userBalance').textContent = `$${user.balance.toFixed(2)}`;
-            
-            // Update VIP status
-            let vipStatus = 'Basic Member';
-            if (user.vip === 'silver') vipStatus = 'Silver Member';
-            if (user.vip === 'gold') vipStatus = 'Gold Member';
-            if (user.vip === 'platinum') vipStatus = 'Platinum Member';
-            document.getElementById('vipStatus').textContent = vipStatus;
-            
-            // Update earnings
-            document.getElementById('totalEarnings').textContent = `$${user.earnings.toFixed(2)}`;
-            
-            // Update earning rate based on VIP status
-            let rate = 0;
-            if (user.vip === 'silver') rate = 0.05;
-            if (user.vip === 'gold') rate = 0.08;
-            if (user.vip === 'platinum') rate = 0.12;
-            document.getElementById('earningRate').textContent = `Daily: $${(user.balance * rate).toFixed(2)}`;
+            usersCollection.doc(currentUser.username).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const user = doc.data();
+                        
+                        // Update balance
+                        document.getElementById('userBalance').textContent = `$${user.balance.toFixed(2)}`;
+                        
+                        // Update VIP status
+                        let vipStatus = 'Basic Member';
+                        if (user.vip === 'silver') vipStatus = 'Silver Member';
+                        if (user.vip === 'gold') vipStatus = 'Gold Member';
+                        if (user.vip === 'platinum') vipStatus = 'Platinum Member';
+                        document.getElementById('vipStatus').textContent = vipStatus;
+                        
+                        // Update earnings
+                        document.getElementById('totalEarnings').textContent = `$${user.earnings.toFixed(2)}`;
+                        
+                        // Update earning rate based on VIP status
+                        let rate = 0;
+                        if (user.vip === 'silver') rate = 0.05;
+                        if (user.vip === 'gold') rate = 0.08;
+                        if (user.vip === 'platinum') rate = 0.12;
+                        document.getElementById('earningRate').textContent = `Daily: $${(user.balance * rate).toFixed(2)}`;
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error getting user data:", error);
+                });
         }
 
         // Load transaction history
         function loadTransactionHistory() {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[currentUser.username];
-            const tbody = document.getElementById('transactionBody');
-            tbody.innerHTML = '';
-            
-            user.transactions.forEach(transaction => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${transaction.date}</td>
-                    <td>${transaction.type}</td>
-                    <td>$${transaction.amount.toFixed(2)}</td>
-                    <td class="status-${transaction.status}">${transaction.status}</td>
-                    <td>${transaction.details || ''}</td>
-                `;
-                tbody.appendChild(row);
-            });
+            usersCollection.doc(currentUser.username).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const user = doc.data();
+                        const tbody = document.getElementById('transactionBody');
+                        tbody.innerHTML = '';
+                        
+                        if (user.transactions && user.transactions.length > 0) {
+                            user.transactions.forEach(transaction => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${new Date(transaction.date).toLocaleString()}</td>
+                                    <td>${transaction.type}</td>
+                                    <td>$${transaction.amount.toFixed(2)}</td>
+                                    <td class="status-${transaction.status}">${transaction.status}</td>
+                                    <td>${transaction.details || ''}</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="5">No transactions found</td></tr>';
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error loading transactions:", error);
+                });
         }
 
         // Load admin data
         function loadAdminData() {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-            const companyProfit = parseFloat(localStorage.getItem('companyProfit'));
-            
             // Populate user dropdown
-            const userSelect = document.getElementById('adminUsername');
-            userSelect.innerHTML = '';
-            Object.keys(users).forEach(username => {
-                if (users[username].role !== 'admin') {
-                    const option = document.createElement('option');
-                    option.value = username;
-                    option.textContent = username;
-                    userSelect.appendChild(option);
-                }
-            });
-            
-            // Update statistics
-            document.getElementById('totalUsers').textContent = Object.keys(users).length - 1; // exclude admin
-            
-            let totalDeposits = 0;
-            let totalWithdrawals = 0;
-            
-            allTransactions.forEach(transaction => {
-                if (transaction.type === 'deposit' || transaction.type === 'admin_deposit' || transaction.type === 'agent_deposit') {
-                    totalDeposits += transaction.amount;
-                } else if (transaction.type === 'withdrawal' || transaction.type === 'admin_deduction' || transaction.type === 'agent_withdrawal') {
-                    totalWithdrawals += transaction.amount;
-                }
-            });
-            
-            document.getElementById('totalDeposits').textContent = totalDeposits.toFixed(2);
-            document.getElementById('totalWithdrawals').textContent = totalWithdrawals.toFixed(2);
-            document.getElementById('companyProfit').textContent = companyProfit.toFixed(2);
-            
-            // Load all users list
-            loadAllUsersList();
-            
-            // Load admin pending requests
-            loadAdminPendingRequests();
-        }
-
-        // Load all users list for admin
-        function loadAllUsersList() {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const usersList = document.getElementById('allUsersList');
-            usersList.innerHTML = '';
-            
-            Object.keys(users).forEach(username => {
-                if (users[username].role !== 'admin') {
-                    const user = users[username];
-                    const userCard = document.createElement('div');
-                    userCard.className = 'user-card';
+            usersCollection.get()
+                .then((querySnapshot) => {
+                    const userSelect = document.getElementById('adminUsername');
+                    userSelect.innerHTML = '';
                     
-                    let vipStatus = 'Basic';
-                    if (user.vip === 'silver') vipStatus = 'Silver';
-                    if (user.vip === 'gold') vipStatus = 'Gold';
-                    if (user.vip === 'platinum') vipStatus = 'Platinum';
+                    querySnapshot.forEach((doc) => {
+                        if (doc.data().role !== 'admin') {
+                            const option = document.createElement('option');
+                            option.value = doc.id;
+                            option.textContent = doc.id;
+                            userSelect.appendChild(option);
+                        }
+                    });
                     
-                    userCard.innerHTML = `
-                        <h4>${username}</h4>
-                        <div class="user-details">
-                            <span>VIP Status:</span>
-                            <span class="user-vip">${vipStatus}</span>
-                        </div>
-                        <div class="user-details">
-                            <span>Balance:</span>
-                            <span class="user-balance">$${user.balance.toFixed(2)}</span>
-                        </div>
-                        <div class="user-details">
-                            <span>Total Earnings:</span>
-                            <span>$${user.earnings.toFixed(2)}</span>
-                        </div>
-                    `;
-                    usersList.appendChild(userCard);
-                }
-            });
-        }
-
-        // Load admin pending requests
-        function loadAdminPendingRequests() {
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            const requestsContainer = document.getElementById('adminPendingRequests');
-            requestsContainer.innerHTML = '';
-            
-            if (pendingRequests.length === 0) {
-                requestsContainer.innerHTML = '<p>No pending requests</p>';
-                return;
-            }
-            
-            pendingRequests.forEach((request, index) => {
-                if (request.status === 'pending') {
-                    const requestItem = document.createElement('div');
-                    requestItem.className = 'request-item';
-                    requestItem.innerHTML = `
-                        <p><strong>User:</strong> ${request.username}</p>
-                        <p><strong>Type:</strong> ${request.type}</p>
-                        <p><strong>Amount:</strong> $${request.amount.toFixed(2)}</p>
-                        <p><strong>Date:</strong> ${request.date}</p>
-                        ${request.method ? `<p><strong>Method:</strong> ${request.method}</p>` : ''}
-                        ${request.wallet ? `<p><strong>Wallet:</strong> ${request.wallet}</p>` : ''}
-                        ${request.details ? `<p><strong>Details:</strong> ${request.details}</p>` : ''}
-                        <div class="request-actions">
-                            <button class="btn btn-success" onclick="adminApproveRequest(${index})">Approve</button>
-                            <button class="btn btn-danger" onclick="adminRejectRequest(${index})">Reject</button>
-                        </div>
-                    `;
-                    requestsContainer.appendChild(requestItem);
-                }
-            });
+                    // Load system statistics
+                    return systemCollection.doc("stats").get();
+                })
+                .then((doc) => {
+                    if (doc.exists) {
+                        const stats = doc.data();
+                        document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+                        document.getElementById('totalDeposits').textContent = stats.totalDeposits ? stats.totalDeposits.toFixed(2) : '0';
+                        document.getElementById('totalWithdrawals').textContent = stats.totalWithdrawals ? stats.totalWithdrawals.toFixed(2) : '0';
+                        document.getElementById('companyProfit').textContent = stats.companyProfit ? stats.companyProfit.toFixed(2) : '0';
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error loading admin data:", error);
+                });
         }
 
         // Load agent data
         function loadAgentData() {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            
-            // Populate user dropdown
-            const userSelect = document.getElementById('agentUsername');
-            userSelect.innerHTML = '';
-            
-            // Only show regular users (not admins or other agents)
-            Object.keys(users).forEach(username => {
-                if (users[username].role === 'user') {
-                    const option = document.createElement('option');
-                    option.value = username;
-                    option.textContent = username;
-                    userSelect.appendChild(option);
-                }
-            });
+            usersCollection.where("role", "==", "user").get()
+                .then((querySnapshot) => {
+                    const userSelect = document.getElementById('agentUsername');
+                    userSelect.innerHTML = '';
+                    
+                    querySnapshot.forEach((doc) => {
+                        const option = document.createElement('option');
+                        option.value = doc.id;
+                        option.textContent = doc.id;
+                        userSelect.appendChild(option);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading agent data:", error);
+                });
         }
 
         // Load pending requests
         function loadPendingRequests() {
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            const requestsContainer = document.getElementById('pendingRequests');
-            requestsContainer.innerHTML = '';
-            
-            if (pendingRequests.length === 0) {
-                requestsContainer.innerHTML = '<p>No pending requests</p>';
-                return;
-            }
-            
-            pendingRequests.forEach((request, index) => {
-                if (request.status === 'pending') {
-                    const requestItem = document.createElement('div');
-                    requestItem.className = 'request-item';
-                    requestItem.innerHTML = `
-                        <p><strong>User:</strong> ${request.username}</p>
-                        <p><strong>Type:</strong> ${request.type}</p>
-                        <p><strong>Amount:</strong> $${request.amount.toFixed(2)}</p>
-                        <p><strong>Date:</strong> ${request.date}</p>
-                        ${request.method ? `<p><strong>Method:</strong> ${request.method}</p>` : ''}
-                        ${request.wallet ? `<p><strong>Wallet:</strong> ${request.wallet}</p>` : ''}
-                        ${request.details ? `<p><strong>Details:</strong> ${request.details}</p>` : ''}
-                        <div class="request-actions">
-                            <button class="btn btn-success" onclick="approveRequest(${index})">Approve</button>
-                            <button class="btn btn-danger" onclick="rejectRequest(${index})">Reject</button>
-                        </div>
-                    `;
-                    requestsContainer.appendChild(requestItem);
-                }
-            });
+            requestsCollection.where("status", "==", "pending").get()
+                .then((querySnapshot) => {
+                    const requestsContainer = document.getElementById('pendingRequests');
+                    requestsContainer.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        requestsContainer.innerHTML = '<p>No pending requests</p>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach((doc) => {
+                        const request = doc.data();
+                        const requestItem = document.createElement('div');
+                        requestItem.className = 'request-item';
+                        requestItem.innerHTML = `
+                            <p><strong>User:</strong> ${request.username}</p>
+                            <p><strong>Type:</strong> ${request.type}</p>
+                            <p><strong>Amount:</strong> $${request.amount.toFixed(2)}</p>
+                            <p><strong>Date:</strong> ${new Date(request.date).toLocaleString()}</p>
+                            ${request.details ? `<p><strong>Details:</strong> ${request.details}</p>` : ''}
+                            ${request.wallet ? `<p><strong>Wallet:</strong> ${request.wallet}</p>` : ''}
+                            <div class="request-actions">
+                                <button class="btn btn-success" onclick="approveRequest('${doc.id}')">Approve</button>
+                                <button class="btn btn-danger" onclick="rejectRequest('${doc.id}')">Reject</button>
+                            </div>
+                        `;
+                        requestsContainer.appendChild(requestItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading requests:", error);
+                });
         }
 
         // Login function
@@ -1302,23 +1183,34 @@
 
         // Perform login
         function performLogin(username, password) {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const email = username + "@worldtradingbot.com";
             
-            if (users[username] && users[username].password === password) {
-                currentUser = {
-                    username: username,
-                    role: users[username].role
-                };
-                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
-                
-                document.getElementById('loginError').style.display = 'none';
-                document.getElementById('modalLoginError').style.display = 'none';
-                hideModal('loginModal');
-                showMainContent();
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-                document.getElementById('modalLoginError').style.display = 'block';
-            }
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    currentUser = {
+                        username: username,
+                        uid: userCredential.user.uid
+                    };
+                    
+                    // Get user data from Firestore
+                    return usersCollection.doc(username).get();
+                })
+                .then((doc) => {
+                    if (doc.exists) {
+                        currentUser.role = doc.data().role;
+                        showMainContent();
+                        document.getElementById('loginError').style.display = 'none';
+                        document.getElementById('modalLoginError').style.display = 'none';
+                        hideModal('loginModal');
+                    } else {
+                        throw new Error("User data not found");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Login error:", error);
+                    document.getElementById('loginError').style.display = 'block';
+                    document.getElementById('modalLoginError').style.display = 'block';
+                });
         }
 
         // Register function
@@ -1341,50 +1233,65 @@
 
         // Perform registration
         function performRegistration(username, password, role) {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
+            const email = username + "@worldtradingbot.com";
             
-            if (users[username]) {
-                document.getElementById('registerError').style.display = 'block';
-                document.getElementById('modalRegisterError').style.display = 'block';
-                document.getElementById('registerSuccess').style.display = 'none';
-                document.getElementById('modalRegisterSuccess').style.display = 'none';
-            } else {
-                users[username] = {
-                    password: password,
-                    balance: 0,
-                    role: role,
-                    vip: 'none',
-                    transactions: [],
-                    earnings: 0
-                };
-                
-                localStorage.setItem('cryptoUsers', JSON.stringify(users));
-                
-                document.getElementById('registerError').style.display = 'none';
-                document.getElementById('modalRegisterError').style.display = 'none';
-                document.getElementById('registerSuccess').style.display = 'block';
-                document.getElementById('modalRegisterSuccess').style.display = 'block';
-                
-                // Clear form
-                document.getElementById('registerUsername').value = '';
-                document.getElementById('registerPassword').value = '';
-                document.getElementById('modalRegisterUsername').value = '';
-                document.getElementById('modalRegisterPassword').value = '';
-                
-                // Hide register modal after 2 seconds
-                setTimeout(() => {
-                    hideModal('registerModal');
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Add user to Firestore
+                    return usersCollection.doc(username).set({
+                        username: username,
+                        balance: 0,
+                        role: role,
+                        vip: 'none',
+                        earnings: 0,
+                        uid: userCredential.user.uid,
+                        transactions: []
+                    });
+                })
+                .then(() => {
+                    document.getElementById('registerError').style.display = 'none';
+                    document.getElementById('modalRegisterError').style.display = 'none';
+                    document.getElementById('registerSuccess').style.display = 'block';
+                    document.getElementById('modalRegisterSuccess').style.display = 'block';
+                    
+                    // Update system stats
+                    return systemCollection.doc("stats").update({
+                        totalUsers: firebase.firestore.FieldValue.increment(1)
+                    });
+                })
+                .then(() => {
+                    // Clear form
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('modalRegisterUsername').value = '';
+                    document.getElementById('modalRegisterPassword').value = '';
+                    
+                    // Hide register modal after 2 seconds
+                    setTimeout(() => {
+                        hideModal('registerModal');
+                        document.getElementById('registerSuccess').style.display = 'none';
+                        document.getElementById('modalRegisterSuccess').style.display = 'none';
+                    }, 2000);
+                })
+                .catch((error) => {
+                    console.error("Registration error:", error);
+                    document.getElementById('registerError').style.display = 'block';
+                    document.getElementById('modalRegisterError').style.display = 'block';
                     document.getElementById('registerSuccess').style.display = 'none';
                     document.getElementById('modalRegisterSuccess').style.display = 'none';
-                }, 2000);
-            }
+                });
         }
 
         // Logout function
         function logout() {
-            localStorage.removeItem('loggedInUser');
-            currentUser = null;
-            showAuthButtons();
+            auth.signOut()
+                .then(() => {
+                    currentUser = null;
+                    showAuthButtons();
+                })
+                .catch((error) => {
+                    console.error("Logout error:", error);
+                });
         }
 
         // Show modal
@@ -1402,7 +1309,7 @@
             const amount = parseFloat(document.getElementById('depositAmount').value);
             const method = document.getElementById('depositMethod').value;
             
-            if (isNaN(amount)) {
+            if (isNaN(amount) {
                 alert('Please enter a valid amount');
                 return;
             }
@@ -1418,42 +1325,38 @@
                 type: 'deposit',
                 amount: amount,
                 method: method,
-                date: new Date().toLocaleString(),
+                date: new Date().toISOString(),
                 status: 'pending',
                 details: `Deposit request via ${method}`
             };
             
-            // Add to pending requests
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            pendingRequests.push(request);
-            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-            
-            // Add transaction to user history
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[currentUser.username];
-            
-            user.transactions.push({
-                date: request.date,
-                type: 'deposit_request',
-                amount: amount,
-                status: 'pending',
-                details: `Pending deposit via ${method}`
-            });
-            
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            hideModal('depositModal');
-            alert('Deposit request submitted successfully! An admin/agent will process your request soon.');
-            
-            // Clear form
-            document.getElementById('depositAmount').value = '';
-            
-            // Update UI
-            updateDashboard();
-            loadTransactionHistory();
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
+            // Add to requests collection
+            requestsCollection.add(request)
+                .then(() => {
+                    // Add transaction to user's history
+                    const transaction = {
+                        date: new Date().toISOString(),
+                        type: 'deposit_request',
+                        amount: amount,
+                        status: 'pending',
+                        details: `Pending deposit via ${method}`
+                    };
+                    
+                    return usersCollection.doc(currentUser.username).update({
+                        transactions: firebase.firestore.FieldValue.arrayUnion(transaction)
+                    });
+                })
+                .then(() => {
+                    hideModal('depositModal');
+                    alert('Deposit request submitted successfully! An agent will process your request soon.');
+                    document.getElementById('depositAmount').value = '';
+                    updateDashboard();
+                    loadTransactionHistory();
+                })
+                .catch((error) => {
+                    console.error("Error processing deposit:", error);
+                    alert('Error submitting deposit request');
+                });
         }
 
         // Process withdrawal request
@@ -1477,289 +1380,191 @@
                 return;
             }
             
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[currentUser.username];
+            // First check user balance
+            usersCollection.doc(currentUser.username).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const user = doc.data();
+                        if (user.balance < amount) {
+                            throw new Error("Insufficient balance");
+                        }
+                        
+                        // Create withdrawal request
+                        const request = {
+                            username: currentUser.username,
+                            type: 'withdrawal',
+                            amount: amount,
+                            method: method,
+                            wallet: wallet,
+                            date: new Date().toISOString(),
+                            status: 'pending',
+                            details: `Withdrawal request to ${wallet} via ${method}`
+                        };
+                        
+                        return requestsCollection.add(request);
+                    }
+                })
+                .then(() => {
+                    // Add transaction to user's history
+                    const transaction = {
+                        date: new Date().toISOString(),
+                        type: 'withdrawal_request',
+                        amount: amount,
+                        status: 'pending',
+                        details: `Pending withdrawal to ${wallet} via ${method}`
+                    };
+                    
+                    return usersCollection.doc(currentUser.username).update({
+                        transactions: firebase.firestore.FieldValue.arrayUnion(transaction)
+                    });
+                })
+                .then(() => {
+                    hideModal('withdrawModal');
+                    alert('Withdrawal request submitted successfully! An agent will process your request soon.');
+                    document.getElementById('withdrawAmount').value = '';
+                    document.getElementById('withdrawWallet').value = '';
+                    updateDashboard();
+                    loadTransactionHistory();
+                })
+                .catch((error) => {
+                    console.error("Error processing withdrawal:", error);
+                    alert(error.message || 'Error submitting withdrawal request');
+                });
+        }
+
+        // Approve request
+        function approveRequest(requestId) {
+            const batch = db.batch();
             
-            if (user.balance < amount) {
-                alert('Insufficient balance');
-                return;
-            }
+            // Get the request
+            const requestRef = requestsCollection.doc(requestId);
             
-            // Create withdrawal request
-            const request = {
-                username: currentUser.username,
-                type: 'withdrawal',
-                amount: amount,
-                method: method,
-                wallet: wallet,
-                date: new Date().toLocaleString(),
-                status: 'pending',
-                details: `Withdrawal request to ${wallet} via ${method}`
-            };
-            
-            // Add to pending requests
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            pendingRequests.push(request);
-            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-            
-            // Add transaction to user history
-            user.transactions.push({
-                date: request.date,
-                type: 'withdrawal_request',
-                amount: amount,
-                status: 'pending',
-                details: `Pending withdrawal to ${wallet} via ${method}`
+            db.runTransaction((transaction) => {
+                return transaction.get(requestRef).then((doc) => {
+                    if (!doc.exists) throw "Document does not exist!";
+                    
+                    const request = doc.data();
+                    
+                    // Get user data
+                    const userRef = usersCollection.doc(request.username);
+                    return transaction.get(userRef).then((userDoc) => {
+                        const user = userDoc.data();
+                        
+                        if (request.type === 'deposit') {
+                            // Process deposit
+                            const newBalance = user.balance + request.amount;
+                            
+                            // Add transaction
+                            const transactionRecord = {
+                                date: new Date().toISOString(),
+                                type: 'deposit',
+                                amount: request.amount,
+                                status: 'completed',
+                                details: `Deposit approved via ${request.method}`
+                            };
+                            
+                            // Update user
+                            transaction.update(userRef, {
+                                balance: newBalance,
+                                transactions: firebase.firestore.FieldValue.arrayUnion(transactionRecord)
+                            });
+                            
+                            // Add to all transactions
+                            transactionsCollection.add({
+                                username: request.username,
+                                ...transactionRecord
+                            });
+                            
+                            // Update system stats
+                            const statsRef = systemCollection.doc("stats");
+                            transaction.update(statsRef, {
+                                totalDeposits: firebase.firestore.FieldValue.increment(request.amount)
+                            });
+                        } 
+                        else if (request.type === 'withdrawal') {
+                            // Calculate company profit (2% fee)
+                            const fee = request.amount * 0.02;
+                            const netAmount = request.amount - fee;
+                            
+                            if (user.balance < request.amount) {
+                                throw "Insufficient balance";
+                            }
+                            
+                            // Update user
+                            transaction.update(userRef, {
+                                balance: firebase.firestore.FieldValue.increment(-request.amount),
+                                transactions: firebase.firestore.FieldValue.arrayUnion({
+                                    date: new Date().toISOString(),
+                                    type: 'withdrawal',
+                                    amount: netAmount,
+                                    status: 'completed',
+                                    details: `Withdrawal approved to ${request.wallet} via ${request.method} (Fee: $${fee.toFixed(2)})`
+                                })
+                            });
+                            
+                            // Add to all transactions
+                            transactionsCollection.add({
+                                username: request.username,
+                                date: new Date().toISOString(),
+                                type: 'withdrawal',
+                                amount: netAmount,
+                                status: 'completed',
+                                details: `Withdrawal approved to ${request.wallet} via ${request.method} (Fee: $${fee.toFixed(2)})`
+                            });
+                            
+                            // Update system stats
+                            const statsRef = systemCollection.doc("stats");
+                            transaction.update(statsRef, {
+                                totalWithdrawals: firebase.firestore.FieldValue.increment(netAmount),
+                                companyProfit: firebase.firestore.FieldValue.increment(fee)
+                            });
+                        }
+                        
+                        // Update request status
+                        transaction.update(requestRef, { status: 'approved' });
+                    });
+                });
+            })
+            .then(() => {
+                alert('Request approved successfully!');
+            })
+            .catch((error) => {
+                console.error("Transaction failed: ", error);
+                alert('Error approving request: ' + error);
             });
-            
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            hideModal('withdrawModal');
-            alert('Withdrawal request submitted successfully! An admin/agent will process your request soon.');
-            
-            // Clear form
-            document.getElementById('withdrawAmount').value = '';
-            document.getElementById('withdrawWallet').value = '';
-            
-            // Update UI
-            updateDashboard();
-            loadTransactionHistory();
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
         }
 
-        // Admin approve request
-        function adminApproveRequest(index) {
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            const request = pendingRequests[index];
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[request.username];
-            
-            if (request.type === 'deposit') {
-                // Process deposit
-                user.balance += request.amount;
-                
-                // Add transaction
-                user.transactions.push({
-                    date: new Date().toLocaleString(),
-                    type: 'deposit',
-                    amount: request.amount,
-                    status: 'completed',
-                    details: `Deposit approved via ${request.method} by admin`
+        // Reject request
+        function rejectRequest(requestId) {
+            requestsCollection.doc(requestId).update({ status: 'rejected' })
+                .then(() => {
+                    // Add transaction to user history
+                    return requestsCollection.doc(requestId).get();
+                })
+                .then((doc) => {
+                    if (doc.exists) {
+                        const request = doc.data();
+                        const transaction = {
+                            date: new Date().toISOString(),
+                            type: request.type === 'deposit' ? 'deposit_request' : 'withdrawal_request',
+                            amount: request.amount,
+                            status: 'rejected',
+                            details: request.details
+                        };
+                        
+                        return usersCollection.doc(request.username).update({
+                            transactions: firebase.firestore.FieldValue.arrayUnion(transaction)
+                        });
+                    }
+                })
+                .then(() => {
+                    loadPendingRequests();
+                    alert('Request rejected successfully!');
+                })
+                .catch((error) => {
+                    console.error("Error rejecting request:", error);
+                    alert('Error rejecting request');
                 });
-                
-                // Add to all transactions
-                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-                allTransactions.push({
-                    username: request.username,
-                    type: 'deposit',
-                    amount: request.amount,
-                    status: 'completed',
-                    date: new Date().toLocaleString(),
-                    details: `Deposit approved via ${request.method} by admin`
-                });
-                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            } 
-            else if (request.type === 'withdrawal') {
-                // Calculate company profit (2% fee)
-                const fee = request.amount * 0.02;
-                const netAmount = request.amount - fee;
-                let companyProfit = parseFloat(localStorage.getItem('companyProfit'));
-                companyProfit += fee;
-                localStorage.setItem('companyProfit', companyProfit.toString());
-                
-                // Process withdrawal
-                user.balance -= request.amount;
-                
-                // Add transaction
-                user.transactions.push({
-                    date: new Date().toLocaleString(),
-                    type: 'withdrawal',
-                    amount: netAmount,
-                    status: 'completed',
-                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by admin (Fee: $${fee.toFixed(2)})`
-                });
-                
-                // Add to all transactions
-                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-                allTransactions.push({
-                    username: request.username,
-                    type: 'withdrawal',
-                    amount: netAmount,
-                    status: 'completed',
-                    date: new Date().toLocaleString(),
-                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by admin (Fee: $${fee.toFixed(2)})`
-                });
-                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            }
-            
-            // Update request status
-            request.status = 'approved';
-            pendingRequests[index] = request;
-            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-            
-            // Update user data
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            // Update UI
-            loadAdminData();
-            alert('Request approved successfully!');
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
-        }
-
-        // Admin reject request
-        function adminRejectRequest(index) {
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            const request = pendingRequests[index];
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[request.username];
-            
-            // Update request status
-            request.status = 'rejected';
-            pendingRequests[index] = request;
-            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-            
-            // Add transaction to user history
-            user.transactions.push({
-                date: new Date().toLocaleString(),
-                type: request.type === 'deposit' ? 'deposit_request' : 'withdrawal_request',
-                amount: request.amount,
-                status: 'rejected',
-                details: `${request.details} (Rejected by admin)`
-            });
-            
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            // Update UI
-            loadAdminData();
-            alert('Request rejected successfully!');
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
-        }
-
-        // Agent approve request
-        function approveRequest(index) {
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            const request = pendingRequests[index];
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[request.username];
-            
-            if (request.type === 'deposit') {
-                // Process deposit
-                user.balance += request.amount;
-                
-                // Add transaction
-                user.transactions.push({
-                    date: new Date().toLocaleString(),
-                    type: 'deposit',
-                    amount: request.amount,
-                    status: 'completed',
-                    details: `Deposit approved via ${request.method} by agent ${currentUser.username}`
-                });
-                
-                // Add to all transactions
-                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-                allTransactions.push({
-                    username: request.username,
-                    type: 'deposit',
-                    amount: request.amount,
-                    status: 'completed',
-                    date: new Date().toLocaleString(),
-                    details: `Deposit approved via ${request.method} by agent ${currentUser.username}`
-                });
-                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            } 
-            else if (request.type === 'withdrawal') {
-                // Calculate company profit (2% fee)
-                const fee = request.amount * 0.02;
-                const netAmount = request.amount - fee;
-                let companyProfit = parseFloat(localStorage.getItem('companyProfit'));
-                companyProfit += fee;
-                localStorage.setItem('companyProfit', companyProfit.toString());
-                
-                // Process withdrawal
-                user.balance -= request.amount;
-                
-                // Add transaction
-                user.transactions.push({
-                    date: new Date().toLocaleString(),
-                    type: 'withdrawal',
-                    amount: netAmount,
-                    status: 'completed',
-                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
-                });
-                
-                // Add to all transactions
-                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-                allTransactions.push({
-                    username: request.username,
-                    type: 'withdrawal',
-                    amount: netAmount,
-                    status: 'completed',
-                    date: new Date().toLocaleString(),
-                    details: `Withdrawal approved to ${request.wallet} via ${request.method} by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
-                });
-                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            }
-            
-            // Update request status
-            request.status = 'approved';
-            pendingRequests[index] = request;
-            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-            
-            // Update user data
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            // Update UI
-            if (currentUser.username === request.username) {
-                updateDashboard();
-                loadTransactionHistory();
-            }
-            
-            loadPendingRequests();
-            alert('Request approved successfully!');
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
-        }
-
-        // Agent reject request
-        function rejectRequest(index) {
-            const pendingRequests = JSON.parse(localStorage.getItem('pendingRequests'));
-            const request = pendingRequests[index];
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[request.username];
-            
-            // Update request status
-            request.status = 'rejected';
-            pendingRequests[index] = request;
-            localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
-            
-            // Add transaction to user history
-            user.transactions.push({
-                date: new Date().toLocaleString(),
-                type: request.type === 'deposit' ? 'deposit_request' : 'withdrawal_request',
-                amount: request.amount,
-                status: 'rejected',
-                details: `${request.details} (Rejected by agent ${currentUser.username})`
-            });
-            
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            // Update UI
-            if (currentUser.username === request.username) {
-                updateDashboard();
-                loadTransactionHistory();
-            }
-            
-            loadPendingRequests();
-            alert('Request rejected successfully!');
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
         }
 
         // Select VIP package
@@ -1841,56 +1646,64 @@
             
             const price = packagePrices[packageType];
             
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[currentUser.username];
-            
-            if (user.balance < price) {
-                alert('Insufficient balance for this package');
-                return;
-            }
-            
-            if (confirm(`Are you sure you want to upgrade to ${packageType} package for $${price}?`)) {
-                user.balance -= price;
-                user.vip = packageType;
-                
-                // Add company profit (20% of package price)
-                const companyProfit = parseFloat(localStorage.getItem('companyProfit'));
-                localStorage.setItem('companyProfit', (companyProfit + (price * 0.2)).toString());
-                
-                // Add transaction
-                const transaction = {
-                    date: new Date().toLocaleString(),
-                    type: 'vip_upgrade',
-                    amount: price,
-                    status: 'completed',
-                    details: `Upgraded to ${packageType} VIP package`
-                };
-                
-                user.transactions.push(transaction);
-                
-                // Add to all transactions
-                const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-                allTransactions.push({
-                    username: currentUser.username,
-                    ...transaction
+            usersCollection.doc(currentUser.username).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const user = doc.data();
+                        if (user.balance < price) {
+                            throw new Error("Insufficient balance for this package");
+                        }
+                        
+                        // Calculate company profit (20% of package price)
+                        const companyProfit = price * 0.2;
+                        
+                        // Start a batch write
+                        const batch = db.batch();
+                        
+                        // Update user
+                        const userRef = usersCollection.doc(currentUser.username);
+                        batch.update(userRef, {
+                            balance: firebase.firestore.FieldValue.increment(-price),
+                            vip: packageType,
+                            transactions: firebase.firestore.FieldValue.arrayUnion({
+                                date: new Date().toISOString(),
+                                type: 'vip_upgrade',
+                                amount: price,
+                                status: 'completed',
+                                details: `Upgraded to ${packageType} VIP package`
+                            })
+                        });
+                        
+                        // Add to all transactions
+                        const transactionRef = transactionsCollection.doc();
+                        batch.set(transactionRef, {
+                            username: currentUser.username,
+                            date: new Date().toISOString(),
+                            type: 'vip_upgrade',
+                            amount: price,
+                            status: 'completed',
+                            details: `Upgraded to ${packageType} VIP package`
+                        });
+                        
+                        // Update system stats
+                        const statsRef = systemCollection.doc("stats");
+                        batch.update(statsRef, {
+                            companyProfit: firebase.firestore.FieldValue.increment(companyProfit)
+                        });
+                        
+                        return batch.commit();
+                    }
+                })
+                .then(() => {
+                    updateDashboard();
+                    loadTransactionHistory();
+                    hideModal('vipModal');
+                    alert(`You have successfully upgraded to ${packageType} VIP package!`);
+                })
+                .catch((error) => {
+                    console.error("Error upgrading VIP:", error);
+                    alert(error.message || 'Error upgrading VIP package');
                 });
-                
-                localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-                localStorage.setItem('cryptoUsers', JSON.stringify(users));
-                
-                updateDashboard();
-                loadTransactionHistory();
-                
-                if (currentUser.role === 'admin') {
-                    loadAdminData();
-                }
-                
-                hideModal('vipModal');
-                alert(`You have successfully upgraded to ${packageType} VIP package!`);
-                
-                // Trigger storage event to update other tabs/devices
-                triggerStorageUpdate();
-            }
         }
 
         // Admin add funds
@@ -1908,45 +1721,57 @@
                 return;
             }
             
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[username];
+            const batch = db.batch();
             
-            user.balance += amount;
+            // Update user balance
+            const userRef = usersCollection.doc(username);
+            batch.update(userRef, {
+                balance: firebase.firestore.FieldValue.increment(amount)
+            });
             
-            // Add transaction
-            const transaction = {
-                date: new Date().toLocaleString(),
+            // Add transaction to user history
+            batch.update(userRef, {
+                transactions: firebase.firestore.FieldValue.arrayUnion({
+                    date: new Date().toISOString(),
+                    type: 'admin_deposit',
+                    amount: amount,
+                    status: 'completed',
+                    details: `Admin added funds`
+                })
+            });
+            
+            // Add to all transactions
+            const transactionRef = transactionsCollection.doc();
+            batch.set(transactionRef, {
+                username: username,
+                date: new Date().toISOString(),
                 type: 'admin_deposit',
                 amount: amount,
                 status: 'completed',
                 details: `Admin added funds`
-            };
-            
-            user.transactions.push(transaction);
-            
-            // Add to all transactions
-            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-            allTransactions.push({
-                username: username,
-                ...transaction
             });
             
-            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            // Update system stats
+            const statsRef = systemCollection.doc("stats");
+            batch.update(statsRef, {
+                totalDeposits: firebase.firestore.FieldValue.increment(amount)
+            });
             
-            if (currentUser.username === username) {
-                updateDashboard();
-                loadTransactionHistory();
-            }
-            
-            loadAdminData();
-            alert(`Successfully added $${amount} to ${username}'s account`);
-            
-            // Clear amount field
-            document.getElementById('adminAmount').value = '';
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
+            batch.commit()
+                .then(() => {
+                    if (currentUser.username === username) {
+                        updateDashboard();
+                        loadTransactionHistory();
+                    }
+                    
+                    loadAdminData();
+                    alert(`Successfully added $${amount} to ${username}'s account`);
+                    document.getElementById('adminAmount').value = '';
+                })
+                .catch((error) => {
+                    console.error("Error adding funds:", error);
+                    alert('Error adding funds');
+                });
         }
 
         // Admin deduct funds
@@ -1964,54 +1789,72 @@
                 return;
             }
             
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[username];
-            
-            if (user.balance < amount) {
-                alert('User has insufficient balance');
-                return;
-            }
-            
-            user.balance -= amount;
-            
-            // Add company profit (10% of deduction)
-            const companyProfit = parseFloat(localStorage.getItem('companyProfit'));
-            localStorage.setItem('companyProfit', (companyProfit + (amount * 0.1)).toString());
-            
-            // Add transaction
-            const transaction = {
-                date: new Date().toLocaleString(),
-                type: 'admin_deduction',
-                amount: amount,
-                status: 'completed',
-                details: `Admin deducted funds`
-            };
-            
-            user.transactions.push(transaction);
-            
-            // Add to all transactions
-            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-            allTransactions.push({
-                username: username,
-                ...transaction
-            });
-            
-            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            if (currentUser.username === username) {
-                updateDashboard();
-                loadTransactionHistory();
-            }
-            
-            loadAdminData();
-            alert(`Successfully deducted $${amount} from ${username}'s account`);
-            
-            // Clear amount field
-            document.getElementById('adminAmount').value = '';
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
+            // First check user balance
+            usersCollection.doc(username).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const user = doc.data();
+                        if (user.balance < amount) {
+                            throw new Error("User has insufficient balance");
+                        }
+                        
+                        // Calculate company profit (10% of deduction)
+                        const fee = amount * 0.1;
+                        
+                        // Start a batch write
+                        const batch = db.batch();
+                        
+                        // Update user balance
+                        const userRef = usersCollection.doc(username);
+                        batch.update(userRef, {
+                            balance: firebase.firestore.FieldValue.increment(-amount)
+                        });
+                        
+                        // Add transaction to user history
+                        batch.update(userRef, {
+                            transactions: firebase.firestore.FieldValue.arrayUnion({
+                                date: new Date().toISOString(),
+                                type: 'admin_deduction',
+                                amount: amount,
+                                status: 'completed',
+                                details: `Admin deducted funds`
+                            })
+                        });
+                        
+                        // Add to all transactions
+                        const transactionRef = transactionsCollection.doc();
+                        batch.set(transactionRef, {
+                            username: username,
+                            date: new Date().toISOString(),
+                            type: 'admin_deduction',
+                            amount: amount,
+                            status: 'completed',
+                            details: `Admin deducted funds`
+                        });
+                        
+                        // Update system stats
+                        const statsRef = systemCollection.doc("stats");
+                        batch.update(statsRef, {
+                            companyProfit: firebase.firestore.FieldValue.increment(fee)
+                        });
+                        
+                        return batch.commit();
+                    }
+                })
+                .then(() => {
+                    if (currentUser.username === username) {
+                        updateDashboard();
+                        loadTransactionHistory();
+                    }
+                    
+                    loadAdminData();
+                    alert(`Successfully deducted $${amount} from ${username}'s account`);
+                    document.getElementById('adminAmount').value = '';
+                })
+                .catch((error) => {
+                    console.error("Error deducting funds:", error);
+                    alert(error.message || 'Error deducting funds');
+                });
         }
 
         // Agent deposit for user
@@ -2029,45 +1872,57 @@
                 return;
             }
             
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[username];
+            const batch = db.batch();
             
-            user.balance += amount;
+            // Update user balance
+            const userRef = usersCollection.doc(username);
+            batch.update(userRef, {
+                balance: firebase.firestore.FieldValue.increment(amount)
+            });
             
-            // Add transaction
-            const transaction = {
-                date: new Date().toLocaleString(),
+            // Add transaction to user history
+            batch.update(userRef, {
+                transactions: firebase.firestore.FieldValue.arrayUnion({
+                    date: new Date().toISOString(),
+                    type: 'agent_deposit',
+                    amount: amount,
+                    status: 'completed',
+                    details: `Deposit processed by agent ${currentUser.username}`
+                })
+            });
+            
+            // Add to all transactions
+            const transactionRef = transactionsCollection.doc();
+            batch.set(transactionRef, {
+                username: username,
+                date: new Date().toISOString(),
                 type: 'agent_deposit',
                 amount: amount,
                 status: 'completed',
                 details: `Deposit processed by agent ${currentUser.username}`
-            };
-            
-            user.transactions.push(transaction);
-            
-            // Add to all transactions
-            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-            allTransactions.push({
-                username: username,
-                ...transaction
             });
             
-            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
+            // Update system stats
+            const statsRef = systemCollection.doc("stats");
+            batch.update(statsRef, {
+                totalDeposits: firebase.firestore.FieldValue.increment(amount)
+            });
             
-            if (currentUser.username === username) {
-                updateDashboard();
-                loadTransactionHistory();
-            }
-            
-            showSyncNotification();
-            alert(`Successfully deposited $${amount} to ${username}'s account`);
-            
-            // Clear amount field
-            document.getElementById('agentAmount').value = '';
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
+            batch.commit()
+                .then(() => {
+                    if (currentUser.username === username) {
+                        updateDashboard();
+                        loadTransactionHistory();
+                    }
+                    
+                    showSyncNotification();
+                    alert(`Successfully deposited $${amount} to ${username}'s account`);
+                    document.getElementById('agentAmount').value = '';
+                })
+                .catch((error) => {
+                    console.error("Error depositing funds:", error);
+                    alert('Error depositing funds');
+                });
         }
 
         // Agent withdraw for user
@@ -2085,57 +1940,74 @@
                 return;
             }
             
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            const user = users[username];
-            
-            if (user.balance < amount) {
-                alert('User has insufficient balance');
-                return;
-            }
-            
-            // Calculate company profit (2% fee)
-            const fee = amount * 0.02;
-            const netAmount = amount - fee;
-            let companyProfit = parseFloat(localStorage.getItem('companyProfit'));
-            companyProfit += fee;
-            localStorage.setItem('companyProfit', companyProfit.toString());
-            
-            user.balance -= amount;
-            
-            // Add transaction
-            const transaction = {
-                date: new Date().toLocaleString(),
-                type: 'agent_withdrawal',
-                amount: netAmount,
-                status: 'completed',
-                details: `Withdrawal processed by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
-            };
-            
-            user.transactions.push(transaction);
-            
-            // Add to all transactions
-            const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-            allTransactions.push({
-                username: username,
-                ...transaction
-            });
-            
-            localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-            localStorage.setItem('cryptoUsers', JSON.stringify(users));
-            
-            if (currentUser.username === username) {
-                updateDashboard();
-                loadTransactionHistory();
-            }
-            
-            showSyncNotification();
-            alert(`Successfully withdrew $${netAmount.toFixed(2)} from ${username}'s account (Fee: $${fee.toFixed(2)})`);
-            
-            // Clear amount field
-            document.getElementById('agentAmount').value = '';
-            
-            // Trigger storage event to update other tabs/devices
-            triggerStorageUpdate();
+            // First check user balance
+            usersCollection.doc(username).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const user = doc.data();
+                        if (user.balance < amount) {
+                            throw new Error("User has insufficient balance");
+                        }
+                        
+                        // Calculate company profit (2% fee)
+                        const fee = amount * 0.02;
+                        const netAmount = amount - fee;
+                        
+                        // Start a batch write
+                        const batch = db.batch();
+                        
+                        // Update user balance
+                        const userRef = usersCollection.doc(username);
+                        batch.update(userRef, {
+                            balance: firebase.firestore.FieldValue.increment(-amount)
+                        });
+                        
+                        // Add transaction to user history
+                        batch.update(userRef, {
+                            transactions: firebase.firestore.FieldValue.arrayUnion({
+                                date: new Date().toISOString(),
+                                type: 'agent_withdrawal',
+                                amount: netAmount,
+                                status: 'completed',
+                                details: `Withdrawal processed by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+                            })
+                        });
+                        
+                        // Add to all transactions
+                        const transactionRef = transactionsCollection.doc();
+                        batch.set(transactionRef, {
+                            username: username,
+                            date: new Date().toISOString(),
+                            type: 'agent_withdrawal',
+                            amount: netAmount,
+                            status: 'completed',
+                            details: `Withdrawal processed by agent ${currentUser.username} (Fee: $${fee.toFixed(2)})`
+                        });
+                        
+                        // Update system stats
+                        const statsRef = systemCollection.doc("stats");
+                        batch.update(statsRef, {
+                            totalWithdrawals: firebase.firestore.FieldValue.increment(netAmount),
+                            companyProfit: firebase.firestore.FieldValue.increment(fee)
+                        });
+                        
+                        return batch.commit();
+                    }
+                })
+                .then(() => {
+                    if (currentUser.username === username) {
+                        updateDashboard();
+                        loadTransactionHistory();
+                    }
+                    
+                    showSyncNotification();
+                    alert(`Successfully withdrew $${netAmount.toFixed(2)} from ${username}'s account (Fee: $${fee.toFixed(2)})`);
+                    document.getElementById('agentAmount').value = '';
+                })
+                .catch((error) => {
+                    console.error("Error withdrawing funds:", error);
+                    alert(error.message || 'Error withdrawing funds');
+                });
         }
 
         // Show sync notification
@@ -2156,61 +2028,125 @@
             }
         }
 
-        // Calculate daily earnings for VIP members
-        function calculateDailyEarnings() {
-            const users = JSON.parse(localStorage.getItem('cryptoUsers'));
-            let updated = false;
-            
-            Object.keys(users).forEach(username => {
-                const user = users[username];
-                if (user.vip !== 'none') {
-                    let rate = 0;
-                    if (user.vip === 'silver') rate = 0.05;
-                    if (user.vip === 'gold') rate = 0.08;
-                    if (user.vip === 'platinum') rate = 0.12;
-                    
-                    const earnings = user.balance * rate;
-                    user.earnings += earnings;
-                    
-                    // Add transaction
-                    const transaction = {
-                        date: new Date().toLocaleString(),
-                        type: 'earning',
-                        amount: earnings,
-                        status: 'completed',
-                        details: `Daily earnings from VIP ${user.vip} package`
-                    };
-                    
-                    user.transactions.push(transaction);
-                    
-                    // Add to all transactions
-                    const allTransactions = JSON.parse(localStorage.getItem('allTransactions'));
-                    allTransactions.push({
-                        username: username,
-                        ...transaction
-                    });
-                    
-                    localStorage.setItem('allTransactions', JSON.stringify(allTransactions));
-                    updated = true;
+        // Initialize data (run this only once)
+        function initializeData() {
+            const initialUsers = {
+                'admin1': { 
+                    password: 'admin123', 
+                    balance: 10000, 
+                    role: 'admin', 
+                    vip: 'platinum', 
+                    earnings: 0,
+                    transactions: []
+                },
+                'agent1': { 
+                    password: 'agent123', 
+                    balance: 5000, 
+                    role: 'agent', 
+                    vip: 'gold', 
+                    earnings: 0,
+                    transactions: []
+                },
+                'user1': { 
+                    password: 'user123', 
+                    balance: 1000, 
+                    role: 'user', 
+                    vip: 'silver', 
+                    earnings: 0,
+                    transactions: []
+                },
+                'user2': { 
+                    password: 'user123', 
+                    balance: 500, 
+                    role: 'user', 
+                    vip: 'none', 
+                    earnings: 0,
+                    transactions: []
                 }
-            });
-            
-            if (updated) {
-                localStorage.setItem('cryptoUsers', JSON.stringify(users));
-                if (currentUser) {
-                    updateDashboard();
-                    loadTransactionHistory();
-                }
+            };
+
+            const batch = db.batch();
+
+            // Add users to Firestore
+            Object.keys(initialUsers).forEach(username => {
+                const userData = initialUsers[username];
+                const email = username + "@worldtradingbot.com";
                 
-                // Trigger storage event to update other tabs/devices
-                triggerStorageUpdate();
-            }
+                // Create auth user (this would normally be done separately)
+                auth.createUserWithEmailAndPassword(email, userData.password)
+                    .catch(error => console.log("User may exist:", error));
+                
+                // Remove password before storing
+                const { password, ...userWithoutPassword } = userData;
+                const userRef = usersCollection.doc(username);
+                batch.set(userRef, userWithoutPassword);
+            });
+
+            // Initialize system stats
+            const statsRef = systemCollection.doc("stats");
+            batch.set(statsRef, {
+                totalUsers: Object.keys(initialUsers).length,
+                totalDeposits: 0,
+                totalWithdrawals: 0,
+                companyProfit: 0
+            });
+
+            return batch.commit()
+                .then(() => console.log("Initialization complete"))
+                .catch(error => console.error("Initialization error:", error));
         }
 
-        // Trigger storage update event
-        function triggerStorageUpdate() {
-            // This will trigger the storage event listener in other tabs/devices
-            localStorage.setItem('lastUpdate', Date.now().toString());
+        // Calculate daily earnings for VIP members
+        function calculateDailyEarnings() {
+            usersCollection.where("vip", "!=", "none").get()
+                .then((querySnapshot) => {
+                    const batch = db.batch();
+                    
+                    querySnapshot.forEach((doc) => {
+                        const user = doc.data();
+                        let rate = 0;
+                        if (user.vip === 'silver') rate = 0.05;
+                        if (user.vip === 'gold') rate = 0.08;
+                        if (user.vip === 'platinum') rate = 0.12;
+                        
+                        const earnings = user.balance * rate;
+                        
+                        // Update user
+                        const userRef = usersCollection.doc(doc.id);
+                        batch.update(userRef, {
+                            earnings: firebase.firestore.FieldValue.increment(earnings),
+                            transactions: firebase.firestore.FieldValue.arrayUnion({
+                                date: new Date().toISOString(),
+                                type: 'earning',
+                                amount: earnings,
+                                status: 'completed',
+                                details: `Daily earnings from VIP ${user.vip} package`
+                            })
+                        });
+                        
+                        // Add to all transactions
+                        const transactionRef = transactionsCollection.doc();
+                        batch.set(transactionRef, {
+                            username: doc.id,
+                            date: new Date().toISOString(),
+                            type: 'earning',
+                            amount: earnings,
+                            status: 'completed',
+                            details: `Daily earnings from VIP ${user.vip} package`
+                        });
+                    });
+                    
+                    return batch.commit();
+                })
+                .then(() => {
+                    if (currentUser) {
+                        updateDashboard();
+                        loadTransactionHistory();
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error calculating earnings:", error);
+                });
         }
 
         // Run daily earnings calculation every 24 hours (for demo, we'll do it every minute)
