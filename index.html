@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Earning - Multi-Level Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Earning</title>
     <style>
         :root {
             --primary: #6a11cb;
@@ -21,6 +21,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -28,29 +29,32 @@
             color: white;
             min-height: 100vh;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
 
         .container {
-            max-width: 1200px;
+            width: 100%;
+            max-width: 100%;
+            padding: 15px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         /* 3D Header Styles */
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             position: relative;
+            padding: 0 10px;
         }
 
         .header h1 {
-            font-size: 3.5rem;
+            font-size: 2.2rem;
             background: linear-gradient(to right, #ff8a00, #e52e71);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
-            margin-bottom: 10px;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            margin-bottom: 8px;
             position: relative;
             display: inline-block;
         }
@@ -58,58 +62,66 @@
         .header h1::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -6px;
             left: 0;
             width: 100%;
-            height: 5px;
+            height: 3px;
             background: linear-gradient(to right, #ff8a00, #e52e71);
-            border-radius: 5px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            border-radius: 3px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
         }
 
-        /* Login/Signup Tabs */
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Auth Tabs */
         .auth-tabs {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            width: 100%;
         }
 
         .tab-btn {
-            padding: 12px 30px;
+            padding: 10px 20px;
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            flex: 1;
+            text-align: center;
+            max-width: 150px;
         }
 
         .tab-btn.active {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
-            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+            box-shadow: 0 3px 10px rgba(106, 17, 203, 0.3);
         }
 
         .tab-btn:first-child {
-            border-radius: 30px 0 0 30px;
+            border-radius: 20px 0 0 20px;
         }
 
         .tab-btn:last-child {
-            border-radius: 0 30px 30px 0;
+            border-radius: 0 20px 20px 0;
         }
 
         /* Auth Forms */
         .auth-container {
             background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            max-width: 500px;
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            width: 100%;
             margin: 0 auto;
             transform-style: preserve-3d;
-            transform: perspective(1000px);
+            transform: perspective(800px);
             border: 1px solid rgba(255,255,255,0.1);
         }
 
@@ -123,88 +135,86 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: 8px;
             color: white;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--secondary);
-            box-shadow: 0 0 10px rgba(37, 117, 252, 0.5);
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.4);
             background: rgba(255,255,255,0.15);
         }
 
         .btn {
             display: inline-block;
-            padding: 12px 30px;
+            padding: 10px 20px;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            border-radius: 30px;
-            font-size: 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             font-weight: 600;
-            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+            box-shadow: 0 4px 12px rgba(106, 17, 203, 0.3);
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(106, 17, 203, 0.4);
         }
 
         .btn:active {
             transform: translateY(1px);
         }
 
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-
         /* Dashboard Styles */
         .dashboard {
             display: none;
+            width: 100%;
         }
 
         .user-info {
             background: linear-gradient(135deg, rgba(106,17,203,0.7), rgba(37,117,252,0.7));
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
 
         .user-info::before {
@@ -225,13 +235,13 @@
         }
 
         .user-details h2 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
+            font-size: 1.2rem;
+            margin-bottom: 3px;
         }
 
         .user-details p {
             opacity: 0.8;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
         }
 
         .user-balance {
@@ -239,8 +249,8 @@
         }
 
         .user-balance h3 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            font-size: 1.4rem;
+            margin-bottom: 3px;
             background: linear-gradient(to right, #fff, #ddd);
             -webkit-background-clip: text;
             background-clip: text;
@@ -249,48 +259,50 @@
 
         .user-balance p {
             opacity: 0.8;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
         }
 
         /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+            width: 100%;
         }
 
         .stat-card {
             background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             background: rgba(255,255,255,0.08);
         }
 
         .stat-card h3 {
-            font-size: 1rem;
-            margin-bottom: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
             color: rgba(255,255,255,0.8);
         }
 
         .stat-card .value {
-            font-size: 1.8rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .stat-card .change {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             display: flex;
             align-items: center;
         }
@@ -305,12 +317,13 @@
 
         /* VIP Packages */
         .packages-section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            width: 100%;
         }
 
         .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
             position: relative;
             display: inline-block;
         }
@@ -318,66 +331,68 @@
         .section-title::after {
             content: '';
             position: absolute;
-            bottom: -8px;
+            bottom: -5px;
             left: 0;
             width: 50%;
-            height: 3px;
+            height: 2px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
-            border-radius: 3px;
+            border-radius: 2px;
         }
 
         .packages-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            width: 100%;
         }
 
         .package-card {
             background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
             text-align: center;
+            width: 100%;
         }
 
         .package-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             background: rgba(255,255,255,0.08);
         }
 
         .package-card.popular {
             border: 2px solid var(--secondary);
-            box-shadow: 0 5px 20px rgba(37, 117, 252, 0.3);
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
         }
 
         .package-card.popular::before {
             content: 'Popular';
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
             background: var(--secondary);
             color: white;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 0.6rem;
             font-weight: 600;
         }
 
         .package-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
             color: white;
         }
 
         .package-card .price {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             background: linear-gradient(to right, #ff8a00, #e52e71);
             -webkit-background-clip: text;
             background-clip: text;
@@ -385,8 +400,8 @@
         }
 
         .package-card .return {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
             color: rgba(255,255,255,0.8);
         }
 
@@ -397,26 +412,32 @@
 
         .package-card .btn {
             width: 100%;
+            padding: 8px 15px;
+            font-size: 0.8rem;
         }
 
         /* Active Investments */
         .investments-section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            width: 100%;
+            overflow-x: auto;
         }
 
         .investments-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             background: rgba(255,255,255,0.05);
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
+            min-width: 500px;
         }
 
         .investments-table th, .investments-table td {
-            padding: 15px;
+            padding: 10px;
             text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
         }
 
         .investments-table th {
@@ -424,30 +445,30 @@
             font-weight: 600;
         }
 
-        .investments-table tr:hover {
-            background: rgba(255,255,255,0.03);
-        }
-
-        /* Deposit/Withdraw Section */
+        /* Transaction Section */
         .transaction-section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            width: 100%;
         }
 
         .transaction-tabs {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
         }
 
         .transaction-tab {
-            padding: 10px 20px;
+            padding: 8px 15px;
             background: transparent;
             border: none;
             color: rgba(255,255,255,0.7);
-            font-size: 1rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            flex: 1;
+            text-align: center;
         }
 
         .transaction-tab.active {
@@ -461,59 +482,62 @@
             bottom: -1px;
             left: 0;
             width: 100%;
-            height: 3px;
+            height: 2px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
-            border-radius: 3px 3px 0 0;
+            border-radius: 2px 2px 0 0;
         }
 
         .transaction-form {
             background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
         }
 
         .payment-methods {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
+            width: 100%;
         }
 
         .payment-method {
             flex: 1;
-            padding: 15px;
+            padding: 12px;
             background: rgba(255,255,255,0.05);
-            border-radius: 10px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.1);
+            min-width: 0;
         }
 
         .payment-method.active {
             background: rgba(37, 117, 252, 0.2);
             border-color: var(--secondary);
-            box-shadow: 0 0 10px rgba(37, 117, 252, 0.3);
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.3);
         }
 
         .payment-method img {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
+            width: 30px;
+            height: 30px;
+            margin-bottom: 8px;
         }
 
         .payment-method p {
-            font-size: 0.9rem;
-            margin-top: 5px;
+            font-size: 0.7rem;
+            margin-top: 3px;
         }
 
         .payment-address {
             background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
             word-break: break-all;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             border: 1px dashed rgba(255,255,255,0.2);
         }
 
@@ -521,71 +545,99 @@
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin-top: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
 
-        .copy-btn:hover {
-            background: rgba(255,255,255,0.2);
+        /* File Preview */
+        .file-preview {
+            margin-top: 12px;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .file-preview img {
+            max-width: 60px;
+            max-height: 60px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-info p {
+            margin-bottom: 3px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Admin Panel */
         .admin-panel {
             display: none;
+            width: 100%;
+            overflow-x: auto;
         }
 
         .admin-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+            width: 100%;
         }
 
         .admin-stat {
             background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 15px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .admin-stat h3 {
-            font-size: 1rem;
-            margin-bottom: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
             color: rgba(255,255,255,0.8);
         }
 
         .admin-stat .value {
-            font-size: 1.8rem;
+            font-size: 1.3rem;
             font-weight: 700;
         }
 
         .users-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             background: rgba(255,255,255,0.05);
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
+            min-width: 600px;
         }
 
         .users-table th, .users-table td {
-            padding: 15px;
+            padding: 10px;
             text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
         }
 
         .users-table th {
             background: rgba(106,17,203,0.5);
             font-weight: 600;
-        }
-
-        .users-table tr:hover {
-            background: rgba(255,255,255,0.03);
         }
 
         .status-pending {
@@ -601,12 +653,12 @@
         }
 
         .action-btn {
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 4px 8px;
+            border-radius: 4px;
             border: none;
             cursor: pointer;
-            font-size: 0.8rem;
-            margin-right: 5px;
+            font-size: 0.7rem;
+            margin-right: 4px;
             transition: all 0.3s ease;
         }
 
@@ -623,109 +675,44 @@
         /* Logout Button */
         .logout-btn {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
             background: linear-gradient(45deg, #ff416c, #ff4b2b);
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 12px 25px;
+            padding: 10px 20px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 65, 108, 0.3);
             z-index: 100;
             display: flex;
             align-items: center;
             transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6);
+            font-size: 0.8rem;
         }
 
         .logout-btn i {
-            margin-right: 8px;
-        }
-
-        /* File Preview */
-        .file-preview {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-        }
-
-        .file-preview img {
-            max-width: 100px;
-            max-height: 100px;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        .file-info {
-            flex: 1;
-        }
-
-        .file-info p {
-            margin-bottom: 5px;
+            margin-right: 6px;
             font-size: 0.9rem;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .stats-grid, .admin-stats {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .packages-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .stats-grid, .admin-stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .tab-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .auth-container {
-                padding: 20px;
-            }
-            
-            .payment-methods {
-                flex-direction: column;
-            }
-        }
-
-        /* Success Message */
+        /* Messages */
         .success-message {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: linear-gradient(45deg, #00b09b, #96c93d);
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 1000;
             display: flex;
             align-items: center;
             transform: translateX(150%);
-            transition: transform 0.5s ease;
+            transition: transform 0.4s ease;
+            max-width: 90%;
+            font-size: 0.8rem;
         }
 
         .success-message.show {
@@ -734,18 +721,20 @@
 
         .error-message {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: linear-gradient(45deg, #ff416c, #ff4b2b);
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 1000;
             display: flex;
             align-items: center;
             transform: translateX(150%);
-            transition: transform 0.5s ease;
+            transition: transform 0.4s ease;
+            max-width: 90%;
+            font-size: 0.8rem;
         }
 
         .error-message.show {
@@ -753,18 +742,66 @@
         }
 
         .message-icon {
-            margin-right: 10px;
-            font-size: 1.5rem;
+            margin-right: 8px;
+            font-size: 1.2rem;
         }
 
         /* 3D Effects */
         .card-3d {
             transform-style: preserve-3d;
-            transition: transform 0.5s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
         .card-3d:hover {
-            transform: rotateY(10deg) rotateX(5deg);
+            transform: rotateY(8deg) rotateX(4deg) translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tab-btn {
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+            
+            .auth-container {
+                padding: 15px;
+            }
+            
+            .user-info {
+                padding: 12px;
+            }
+            
+            .user-details h2 {
+                font-size: 1.1rem;
+            }
+            
+            .user-balance h3 {
+                font-size: 1.2rem;
+            }
+            
+            .package-card .price {
+                font-size: 1.5rem;
+            }
+            
+            .logout-btn {
+                padding: 8px 15px;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Hide scrollbar but allow scrolling */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -799,7 +836,7 @@
                 <div class="form-group">
                     <button class="btn btn-block" id="login-btn">Login</button>
                 </div>
-                <p style="text-align: center; margin-top: 15px; opacity: 0.7;">Forgot password? <a href="#" style="color: var(--secondary);">Click here</a></p>
+                <p style="text-align: center; margin-top: 12px; opacity: 0.7; font-size: 0.8rem;">Forgot password? <a href="#" style="color: var(--secondary);">Click here</a></p>
             </div>
 
             <!-- Register Form -->
@@ -823,21 +860,20 @@
                 <div class="form-group">
                     <button class="btn btn-block" id="register-btn">Create Account</button>
                 </div>
-                <p style="text-align: center; margin-top: 15px; opacity: 0.7;">By registering, you agree to our <a href="#" style="color: var(--secondary);">Terms & Conditions</a></p>
+                <p style="text-align: center; margin-top: 12px; opacity: 0.7; font-size: 0.8rem;">By registering, you agree to our <a href="#" style="color: var(--secondary);">Terms</a></p>
             </div>
         </div>
 
         <!-- User Dashboard -->
         <div class="dashboard" id="user-dashboard">
-            <div class="user-info">
+            <div class="user-info card-3d">
                 <div class="user-details">
                     <h2>Welcome, <span id="user-name">User</span>!</h2>
-                    <p>User ID: <span id="user-id">USR123456</span></p>
-                    <p>Joined: <span id="join-date">01 Jan 2023</span></p>
+                    <p>ID: <span id="user-id">USR123456</span></p>
                 </div>
                 <div class="user-balance">
                     <h3>$<span id="user-balance">0.00</span></h3>
-                    <p>Available Balance</p>
+                    <p>Available</p>
                 </div>
             </div>
 
@@ -850,84 +886,86 @@
                     </div>
                 </div>
                 <div class="stat-card card-3d">
-                    <h3>Active Investments</h3>
+                    <h3>Active</h3>
                     <div class="value">$<span id="active-investments">0.00</span></div>
                     <div class="change up">
-                        <i class="fas fa-arrow-up"></i> <span id="active-count">0</span> packages
+                        <i class="fas fa-box"></i> <span id="active-count">0</span>
                     </div>
                 </div>
                 <div class="stat-card card-3d">
-                    <h3>Referral Earnings</h3>
+                    <h3>Referrals</h3>
                     <div class="value">$<span id="referral-earnings">0.00</span></div>
                     <div class="change up">
-                        <i class="fas fa-users"></i> <span id="referral-count">0</span> users
+                        <i class="fas fa-users"></i> <span id="referral-count">0</span>
                     </div>
                 </div>
                 <div class="stat-card card-3d">
-                    <h3>Withdrawals</h3>
+                    <h3>Withdrawn</h3>
                     <div class="value">$<span id="total-withdrawals">0.00</span></div>
                     <div class="change up">
-                        <i class="fas fa-arrow-up"></i> $<span id="today-withdrawals">0.00</span> today
+                        <i class="fas fa-arrow-up"></i> $<span id="today-withdrawals">0.00</span>
                     </div>
                 </div>
             </div>
 
             <div class="packages-section">
-                <h2 class="section-title">VIP Investment Packages</h2>
+                <h2 class="section-title">VIP Packages</h2>
                 <div class="packages-grid">
                     <div class="package-card card-3d" data-package="starter" data-price="50" data-return="6">
                         <h3>Starter</h3>
                         <div class="price">$50</div>
-                        <div class="return">Daily Return: <span>6%</span></div>
+                        <div class="return">Daily: <span>6%</span></div>
                         <button class="btn invest-btn">Invest Now</button>
                     </div>
                     <div class="package-card card-3d popular" data-package="silver" data-price="100" data-return="8">
                         <h3>Silver</h3>
                         <div class="price">$100</div>
-                        <div class="return">Daily Return: <span>8%</span></div>
+                        <div class="return">Daily: <span>8%</span></div>
                         <button class="btn invest-btn">Invest Now</button>
                     </div>
                     <div class="package-card card-3d" data-package="gold" data-price="300" data-return="9">
                         <h3>Gold</h3>
                         <div class="price">$300</div>
-                        <div class="return">Daily Return: <span>9%</span></div>
+                        <div class="return">Daily: <span>9%</span></div>
                         <button class="btn invest-btn">Invest Now</button>
                     </div>
                     <div class="package-card card-3d" data-package="platinum" data-price="500" data-return="10">
                         <h3>Platinum</h3>
                         <div class="price">$500</div>
-                        <div class="return">Daily Return: <span>10%</span></div>
+                        <div class="return">Daily: <span>10%</span></div>
                         <button class="btn invest-btn">Invest Now</button>
                     </div>
                     <div class="package-card card-3d" data-package="diamond" data-price="1000" data-return="10">
                         <h3>Diamond</h3>
                         <div class="price">$1000</div>
-                        <div class="return">Daily Return: <span>10%</span></div>
+                        <div class="return">Daily: <span>10%</span></div>
                         <button class="btn invest-btn">Invest Now</button>
                     </div>
                     <div class="package-card card-3d" data-package="royal" data-price="5000" data-return="10">
                         <h3>Royal</h3>
                         <div class="price">$5000</div>
-                        <div class="return">Daily Return: <span>10%</span></div>
+                        <div class="return">Daily: <span>10%</span></div>
                         <button class="btn invest-btn">Invest Now</button>
                     </div>
                 </div>
             </div>
 
             <div class="investments-section">
-                <h2 class="section-title">Active Investments</h2>
-                <table class="investments-table" id="active-investments-table">
+                <h2 class="section-title">My Investments</h2>
+                <table class="investments-table">
                     <thead>
                         <tr>
                             <th>Package</th>
                             <th>Amount</th>
-                            <th>Daily Return</th>
-                            <th>Started</th>
-                            <th>Next Payment</th>
+                            <th>Daily</th>
+                            <th>Next Pay</th>
                         </tr>
                     </thead>
                     <tbody id="investments-body">
                         <!-- Active investments will be added here dynamically -->
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 15px;">No active investments</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -940,7 +978,7 @@
 
                 <div class="transaction-form" id="deposit-form">
                     <div class="form-group">
-                        <label>Select Payment Method</label>
+                        <label>Payment Method</label>
                         <div class="payment-methods">
                             <div class="payment-method active" data-method="trc20">
                                 <img src="https://cryptologos.cc/logos/tron-trx-logo.png" alt="TRC20">
@@ -954,7 +992,7 @@
                     </div>
                     <div class="form-group">
                         <label for="deposit-amount">Amount ($)</label>
-                        <input type="number" id="deposit-amount" class="form-control" placeholder="Enter amount to deposit">
+                        <input type="number" id="deposit-amount" class="form-control" placeholder="Enter amount">
                     </div>
                     <div class="form-group">
                         <label>Deposit Address</label>
@@ -962,14 +1000,14 @@
                             TRC20: TXoWzutmFoaXhr8g7KUoc3QXZegpQHzsfe
                         </div>
                         <div class="payment-address" id="solana-address" style="display: none;">
-                            SOLONA: BB4s5CKobWxoptwgat33zzwdfkdQ17c48pKJywYd4odw
+                            SOL: BB4s5CKobWxoptwgat33zzwdfkdQ17c48pKJywYd4odw
                         </div>
                         <button class="copy-btn" id="copy-address">
-                            <i class="fas fa-copy"></i> Copy Address
+                            <i class="fas fa-copy"></i> Copy
                         </button>
                     </div>
                     <div class="form-group">
-                        <label for="deposit-proof">Upload Payment Proof (Screenshot)</label>
+                        <label for="deposit-proof">Payment Proof</label>
                         <input type="file" id="deposit-proof" class="form-control" accept="image/*">
                         <div class="file-preview" id="file-preview" style="display: none;">
                             <img id="preview-image" src="" alt="Payment Proof">
@@ -980,47 +1018,47 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-block" id="submit-deposit">Submit Deposit Request</button>
+                        <button class="btn btn-block" id="submit-deposit">Submit</button>
                     </div>
                 </div>
 
                 <div class="transaction-form" id="withdraw-form" style="display: none;">
                     <div class="form-group">
                         <label for="withdraw-amount">Amount ($)</label>
-                        <input type="number" id="withdraw-amount" class="form-control" placeholder="Enter amount to withdraw">
+                        <input type="number" id="withdraw-amount" class="form-control" placeholder="Enter amount">
                     </div>
                     <div class="form-group">
                         <label for="withdraw-wallet">Wallet Address</label>
-                        <input type="text" id="withdraw-wallet" class="form-control" placeholder="Enter your wallet address">
+                        <input type="text" id="withdraw-wallet" class="form-control" placeholder="Your wallet address">
                     </div>
                     <div class="form-group">
-                        <label>Select Network</label>
+                        <label>Network</label>
                         <select id="withdraw-network" class="form-control">
                             <option value="trc20">TRC20</option>
                             <option value="solana">Solana</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-block" id="submit-withdraw">Request Withdrawal</button>
+                        <button class="btn btn-block" id="submit-withdraw">Request</button>
                     </div>
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 30px; opacity: 0.7;">
-                <p>Need help? Contact our support: <a href="https://t.me/CostumereCare_Bot" style="color: var(--secondary);">@CostumereCare_Bot</a></p>
+            <div style="text-align: center; margin-top: 20px; opacity: 0.7; font-size: 0.8rem;">
+                <p>Support: <a href="https://t.me/CostumereCare_Bot" style="color: var(--secondary);">@CostumereCare_Bot</a></p>
             </div>
         </div>
 
         <!-- Admin Dashboard -->
         <div class="dashboard admin-panel" id="admin-dashboard">
-            <div class="user-info">
+            <div class="user-info card-3d">
                 <div class="user-details">
                     <h2>Admin Panel</h2>
-                    <p>Welcome back, Admin!</p>
+                    <p>Manage users & transactions</p>
                 </div>
                 <div class="user-balance">
                     <h3>$<span id="total-platform-balance">25,842.50</span></h3>
-                    <p>Platform Balance</p>
+                    <p>Platform</p>
                 </div>
             </div>
 
@@ -1030,7 +1068,7 @@
                     <div class="value">1,248</div>
                 </div>
                 <div class="admin-stat card-3d">
-                    <h3>Active Investments</h3>
+                    <h3>Investments</h3>
                     <div class="value">$184,520</div>
                 </div>
                 <div class="admin-stat card-3d">
@@ -1043,38 +1081,39 @@
                 </div>
             </div>
 
-            <h2 class="section-title">Pending Deposit Requests</h2>
-            <table class="users-table" id="deposit-requests-table">
+            <h2 class="section-title">Pending Deposits</h2>
+            <table class="users-table">
                 <thead>
                     <tr>
-                        <th>User ID</th>
+                        <th>User</th>
                         <th>Amount</th>
-                        <th>Method</th>
-                        <th>Payment Proof</th>
-                        <th>Date</th>
-                        <th>Status</th>
+                        <th>Proof</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="deposit-requests-body">
                     <!-- Deposit requests will be added here dynamically -->
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 15px;">No pending deposits</td>
+                    </tr>
                 </tbody>
             </table>
 
-            <h2 class="section-title">Pending Withdrawal Requests</h2>
-            <table class="users-table" id="withdrawal-requests-table">
+            <h2 class="section-title">Pending Withdrawals</h2>
+            <table class="users-table">
                 <thead>
                     <tr>
-                        <th>User ID</th>
+                        <th>User</th>
                         <th>Amount</th>
                         <th>Wallet</th>
-                        <th>Date</th>
-                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="withdrawal-requests-body">
                     <!-- Withdrawal requests will be added here dynamically -->
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 15px;">No pending withdrawals</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -1088,13 +1127,13 @@
     <!-- Success Message -->
     <div class="success-message" id="success-message">
         <i class="fas fa-check-circle message-icon"></i>
-        <span id="success-text">Operation completed successfully!</span>
+        <span id="success-text">Operation successful!</span>
     </div>
 
     <!-- Error Message -->
     <div class="error-message" id="error-message">
         <i class="fas fa-exclamation-circle message-icon"></i>
-        <span id="error-text">An error occurred!</span>
+        <span id="error-text">Error occurred!</span>
     </div>
 
     <script>
@@ -1247,7 +1286,7 @@
                     }
                     reader.readAsDataURL(file);
                 } else {
-                    showError('Please select an image file (JPEG, PNG, etc.)');
+                    showError('Please select an image file (JPEG, PNG)');
                     this.value = '';
                 }
             } else {
@@ -1267,7 +1306,7 @@
             }
             
             navigator.clipboard.writeText(textToCopy).then(() => {
-                showSuccess('Address copied to clipboard!');
+                showSuccess('Address copied!');
             });
         });
 
@@ -1293,6 +1332,7 @@
                             userDashboard.style.display = 'block';
                             adminDashboard.style.display = 'none';
                             updateUserDashboard();
+                            startInterestCalculation();
                             showSuccess('Login successful!');
                         }
                         
@@ -1300,7 +1340,7 @@
                         loginForm.style.display = 'none';
                         registerForm.style.display = 'none';
                         logoutBtn.style.display = 'flex';
-                    }, 1000);
+                    }, 500);
                 } else {
                     showError('Invalid credentials!');
                 }
@@ -1342,7 +1382,7 @@
                 localStorage.setItem('users', JSON.stringify(users));
                 
                 setTimeout(() => {
-                    showSuccess('Account created successfully!');
+                    showSuccess('Account created!');
                     
                     // Switch to login tab
                     registerTab.classList.remove('active');
@@ -1353,7 +1393,7 @@
                     // Pre-fill login form
                     document.getElementById('login-email').value = email;
                     document.getElementById('login-password').value = password;
-                }, 1000);
+                }, 500);
             } else {
                 showError('Please fill all fields!');
             }
@@ -1378,7 +1418,7 @@
             document.getElementById('register-password').value = '';
             document.getElementById('register-ref').value = '';
             
-            showSuccess('Logged out successfully!');
+            showSuccess('Logged out!');
         });
 
         // Deposit Request
@@ -1388,7 +1428,7 @@
             const file = depositProof.files[0];
             
             if (!amount || amount <= 0) {
-                showError('Please enter a valid amount!');
+                showError('Please enter valid amount!');
                 return;
             }
             
@@ -1419,7 +1459,7 @@
             depositProof.value = '';
             filePreview.style.display = 'none';
             
-            showSuccess('Deposit request submitted for admin approval!');
+            showSuccess('Deposit request submitted!');
         });
 
         // Withdraw Request
@@ -1429,7 +1469,7 @@
             const network = document.getElementById('withdraw-network').value;
             
             if (!amount || amount <= 0) {
-                showError('Please enter a valid amount!');
+                showError('Please enter valid amount!');
                 return;
             }
             
@@ -1464,7 +1504,7 @@
             document.getElementById('withdraw-amount').value = '';
             document.getElementById('withdraw-wallet').value = '';
             
-            showSuccess('Withdrawal request submitted for admin approval!');
+            showSuccess('Withdrawal request submitted!');
         });
 
         // Invest in VIP Package
@@ -1476,7 +1516,7 @@
                 const packageReturn = parseFloat(packageCard.dataset.return);
                 
                 if (currentUser.balance < packagePrice) {
-                    showError('Insufficient balance to purchase this package!');
+                    showError('Insufficient balance!');
                     return;
                 }
                 
@@ -1507,14 +1547,11 @@
                 // Update UI
                 updateUserDashboard();
                 
-                showSuccess(`Successfully invested in ${packages[packageName].name} package! $${earnings.toFixed(2)} added to your balance.`);
-                
-                // Start daily interest interval (simulated)
-                startInterestCalculation();
+                showSuccess(`Invested in ${packages[packageName].name}! $${earnings.toFixed(2)} added`);
             });
         });
 
-        // Start interest calculation (simulated for demo)
+        // Start interest calculation
         function startInterestCalculation() {
             // In a real app, this would be server-side with proper timing
             setInterval(() => {
@@ -1522,12 +1559,14 @@
                 
                 const now = new Date().getTime();
                 let earnedToday = 0;
+                let hasEarnings = false;
                 
                 currentUser.investments.forEach(investment => {
                     if (now >= investment.nextPayment) {
                         // Calculate earnings
                         const earnings = (investment.amount * investment.dailyReturn) / 100;
                         earnedToday += earnings;
+                        hasEarnings = true;
                         
                         // Update investment
                         investment.lastPayment = now;
@@ -1535,18 +1574,16 @@
                     }
                 });
                 
-                if (earnedToday > 0) {
+                if (hasEarnings) {
                     currentUser.balance += earnedToday;
                     currentUser.totalEarned += earnedToday;
                     localStorage.setItem('users', JSON.stringify(users));
                     updateUserDashboard();
                     
-                    // Show notification (would be better as push notification in real app)
-                    if (document.visibilityState === 'visible') {
-                        showSuccess(`Daily earnings: $${earnedToday.toFixed(2)} added to your balance!`);
-                    }
+                    // Show notification
+                    showSuccess(`Daily earnings: $${earnedToday.toFixed(2)} added!`);
                 }
-            }, 5000); // Check every 5 seconds for demo purposes
+            }, 5000); // Check every 5 seconds for demo
         }
 
         // Update User Dashboard
@@ -1574,17 +1611,25 @@
             
             // Update investments table
             investmentsBody.innerHTML = '';
-            currentUser.investments.forEach(investment => {
+            
+            if (currentUser.investments.length === 0) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${packages[investment.package].name}</td>
-                    <td>$${investment.amount.toFixed(2)}</td>
-                    <td>${investment.dailyReturn}% ($${(investment.amount * investment.dailyReturn / 100).toFixed(2)})</td>
-                    <td>${investment.startDate}</td>
-                    <td>${new Date(investment.nextPayment).toLocaleTimeString()}</td>
+                    <td colspan="4" style="text-align: center; padding: 15px;">No active investments</td>
                 `;
                 investmentsBody.appendChild(row);
-            });
+            } else {
+                currentUser.investments.forEach(investment => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${packages[investment.package].name}</td>
+                        <td>$${investment.amount.toFixed(2)}</td>
+                        <td>${investment.dailyReturn}%</td>
+                        <td>${new Date(investment.nextPayment).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                    `;
+                    investmentsBody.appendChild(row);
+                });
+            }
         }
 
         // Update Admin Tables
@@ -1594,43 +1639,52 @@
             withdrawalRequestsBody.innerHTML = '';
             
             // Add deposit requests
-            depositRequests.forEach(request => {
-                if (request.status === 'pending') {
+            const pendingDeposits = depositRequests.filter(r => r.status === 'pending');
+            if (pendingDeposits.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="4" style="text-align: center; padding: 15px;">No pending deposits</td>
+                `;
+                depositRequestsBody.appendChild(row);
+            } else {
+                pendingDeposits.forEach(request => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${request.userId}</td>
                         <td>$${request.amount.toFixed(2)}</td>
-                        <td>${request.method.toUpperCase()}</td>
                         <td>${request.proof}</td>
-                        <td>${request.date}</td>
-                        <td class="status-pending">Pending</td>
                         <td>
                             <button class="action-btn approve-btn" data-id="${request.id}" data-type="deposit">Approve</button>
                             <button class="action-btn reject-btn" data-id="${request.id}" data-type="deposit">Reject</button>
                         </td>
                     `;
                     depositRequestsBody.appendChild(row);
-                }
-            });
+                });
+            }
             
             // Add withdrawal requests
-            withdrawalRequests.forEach(request => {
-                if (request.status === 'pending') {
+            const pendingWithdrawals = withdrawalRequests.filter(r => r.status === 'pending');
+            if (pendingWithdrawals.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="4" style="text-align: center; padding: 15px;">No pending withdrawals</td>
+                `;
+                withdrawalRequestsBody.appendChild(row);
+            } else {
+                pendingWithdrawals.forEach(request => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${request.userId}</td>
                         <td>$${request.amount.toFixed(2)}</td>
-                        <td>${request.network.toUpperCase()}: ${request.wallet.substring(0, 10)}...</td>
-                        <td>${request.date}</td>
-                        <td class="status-pending">Pending</td>
+                        <td>${request.network.toUpperCase()}: ${request.wallet.substring(0, 6)}...${request.wallet.slice(-4)}</td>
                         <td>
                             <button class="action-btn approve-btn" data-id="${request.id}" data-type="withdraw">Approve</button>
                             <button class="action-btn reject-btn" data-id="${request.id}" data-type="withdraw">Reject</button>
                         </td>
                     `;
                     withdrawalRequestsBody.appendChild(row);
-                }
-            });
+                });
+            }
             
             // Add event listeners to new buttons
             document.querySelectorAll('.approve-btn').forEach(btn => {
@@ -1692,7 +1746,7 @@
             }
             
             updateAdminTables();
-            showSuccess(`Request ${isApprove ? 'approved' : 'rejected'} successfully!`);
+            showSuccess(`Request ${isApprove ? 'approved' : 'rejected'}!`);
         }
 
         // Show success message
@@ -1714,6 +1768,36 @@
                 errorMessage.classList.remove('show');
             }, 3000);
         }
+
+        // Add 3D hover effects to cards on devices that support hover
+        function setup3DEffects() {
+            const hasHover = window.matchMedia('(hover: hover)').matches;
+            
+            if (hasHover) {
+                document.querySelectorAll('.card-3d').forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const angleX = (y - centerY) / 20;
+                        const angleY = (centerX - x) / 20;
+                        
+                        card.style.transform = `perspective(800px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(1.02)`;
+                        card.style.boxShadow = '0 15px 30px rgba(0,0,0,0.3)';
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
+                        card.style.boxShadow = '0 8px 20px rgba(0,0,0,0.2)';
+                    });
+                });
+            }
+        }
+
+        // Initialize 3D effects
+        setup3DEffects();
     </script>
 </body>
 </html>
